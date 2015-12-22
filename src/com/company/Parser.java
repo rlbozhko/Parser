@@ -1,27 +1,31 @@
 package com.company;
 
-
 import org.htmlcleaner.*;
 
 import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathFactory;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.util.Scanner;
 
 public class Parser {
 
-    public final static targetUrl ="http://hard.rozetka.com.ua/ssd/c80109/price=1000-3000/";
+    public final static String targetUrl ="http://hard.rozetka.com.ua/ssd/c80109/price=1000-3000/";
 
     public static void main(String[] args) {
         try {
-
+            String html = getPageHtml(targetUrl);
             TagNode tagNode = new HtmlCleaner().clean(
-                    "<div><table><td id='1234 foo 5678'>Hello</td>");
+                    html);
             org.w3c.dom.Document doc = new DomSerializer(
                     new CleanerProperties()).createDOM(tagNode);
 
 
             XPath xpath = XPathFactory.newInstance().newXPath();
-            String str = (String) xpath.evaluate("//div//td[contains(@id, 'foo')]/text()",
+            String str = (String) xpath.evaluate("//*[@id=\"block_with_goods\"]/div[1]",
                     doc, XPathConstants.STRING);
             System.out.println(str);
 
@@ -84,4 +88,25 @@ public class Parser {
         }
         return result.toString();
     }
+
+    public static String getPageHtml(String url) {
+        String html = "";
+        try {
+            URL siteUrl = new URL(url);
+            HttpURLConnection httpURLConnection = (HttpURLConnection) siteUrl.openConnection();
+            httpURLConnection.connect();
+
+            InputStream inputStream = httpURLConnection.getInputStream();
+            Scanner scanner = new Scanner(inputStream, "UTF-8");
+            html = scanner.useDelimiter("\\A").next();
+            scanner.close();
+            httpURLConnection.disconnect();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        return html;
+    }
+
+
 }
