@@ -11,7 +11,7 @@ public class Parser {
 
     public static void main(String[] args) {
         try {
-
+//
             TagNode tagNode = new HtmlCleaner().clean(
                     "<div><table><td id='1234 foo 5678'>Hello</td>");
             org.w3c.dom.Document doc = new DomSerializer(
