@@ -9,9 +9,11 @@ import javax.xml.xpath.XPathFactory;
 
 public class Parser {
 
+    public final static targetUrl ="http://hard.rozetka.com.ua/ssd/c80109/price=1000-3000/";
+
     public static void main(String[] args) {
         try {
-//
+
             TagNode tagNode = new HtmlCleaner().clean(
                     "<div><table><td id='1234 foo 5678'>Hello</td>");
             org.w3c.dom.Document doc = new DomSerializer(
