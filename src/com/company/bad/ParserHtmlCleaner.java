@@ -1,4 +1,4 @@
-package com.company;
+package com.company.bad;
 
 import org.htmlcleaner.*;
 
@@ -11,7 +11,7 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.Scanner;
 
-public class Parser {
+public class ParserHtmlCleaner {
 
     public final static String targetUrl ="http://rozetka.com.ua/";
             //"http://hard.rozetka.com.ua/ssd/c80109/price=1000-3000/";
