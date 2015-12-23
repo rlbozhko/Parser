@@ -13,7 +13,8 @@ import java.util.Scanner;
 
 public class Parser {
 
-    public final static String targetUrl ="http://hard.rozetka.com.ua/ssd/c80109/price=1000-3000/";
+    public final static String targetUrl ="http://rozetka.com.ua/";
+            //"http://hard.rozetka.com.ua/ssd/c80109/price=1000-3000/";
 
     public static void main(String[] args) {
         try {
@@ -25,8 +26,10 @@ public class Parser {
 
 
             XPath xpath = XPathFactory.newInstance().newXPath();
-            String str = (String) xpath.evaluate("//*[@id=\"block_with_goods\"]/div[1]",
+            String str = (String) xpath.evaluate("//nav/ul/li[1]/div//ul/li[1]//div/ul[2]/li[4]",
                     doc, XPathConstants.STRING);
+
+       //      "//*[@id=\"block_with_goods\"]/div[1]"
             System.out.println(str);
 
     /*        HtmlCleaner cleaner = new HtmlCleaner();
