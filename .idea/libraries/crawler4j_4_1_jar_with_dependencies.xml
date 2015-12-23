@@ -1,0 +1,12 @@
+<component name="libraryTable">
+  <library name="crawler4j-4.1-jar-with-dependencies">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/crawler4j-4.1-jar-with-dependencies.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES>
+      <root url="jar://$PROJECT_DIR$/crawler4j-crawler4j-4.1.zip!/crawler4j-crawler4j-4.1/src/main/java" />
+      <root url="jar://$PROJECT_DIR$/crawler4j-crawler4j-4.1.zip!/crawler4j-crawler4j-4.1/src/test/java" />
+    </SOURCES>
+  </library>
+</component>

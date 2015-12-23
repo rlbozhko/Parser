@@ -13,7 +13,7 @@ import java.util.Scanner;
 
 public class ParserHtmlCleaner {
 
-    public final static String targetUrl ="http://rozetka.com.ua/";
+    public final static String targetUrl ="http://rozetka.com.ua/pressboards/c185692/";
             //"http://hard.rozetka.com.ua/ssd/c80109/price=1000-3000/";
 //"http://rozetka.com.ua/"
 
@@ -27,9 +27,12 @@ public class ParserHtmlCleaner {
 
 
             XPath xpath = XPathFactory.newInstance().newXPath();
-            String str = (String) xpath.evaluate("//nav/ul/li[1]/div//ul/li[1]//div/ul[2]/li[4]",
+            String str = (String) xpath.evaluate("//*[@id=\"sort_price\"]",
                     doc, XPathConstants.STRING);
 
+            //   price=858-2937/
+            //xpath.evaluate("//*[contains(@href,'rozetka.com.ua')]"
+//*[@id="sort_price"]
        //      "//*[@id=\"block_with_goods\"]/div[1]"
        //     "//nav/ul/li[1]/div//ul/li[1]//div/ul[2]/li[4]"
             System.out.println(str);
