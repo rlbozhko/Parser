@@ -15,6 +15,7 @@ public class Parser {
 
     public final static String targetUrl ="http://rozetka.com.ua/";
             //"http://hard.rozetka.com.ua/ssd/c80109/price=1000-3000/";
+//"http://rozetka.com.ua/"
 
     public static void main(String[] args) {
         try {
@@ -30,6 +31,7 @@ public class Parser {
                     doc, XPathConstants.STRING);
 
        //      "//*[@id=\"block_with_goods\"]/div[1]"
+       //     "//nav/ul/li[1]/div//ul/li[1]//div/ul[2]/li[4]"
             System.out.println(str);
 
     /*        HtmlCleaner cleaner = new HtmlCleaner();
