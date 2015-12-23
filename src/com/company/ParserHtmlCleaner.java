@@ -1,4 +1,4 @@
-package com.company.bad;
+package com.company;
 
 import org.htmlcleaner.*;
 
