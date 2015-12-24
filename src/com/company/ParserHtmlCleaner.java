@@ -103,7 +103,7 @@ public class ParserHtmlCleaner {
         String sortedUrl = url + "page="+page+";"+"price="+minPrice+"-"+maxPrice+"/";
         System.out.println(sortedUrl);
 
-        //Todo
+        //Todo ParseSortPrice
         // ѕродолжать цикл если на странице есть //div[@name="more_goods"]
 
         //вытащить   // "//*[@id=\"block_with_goods\"]/div[1]"
