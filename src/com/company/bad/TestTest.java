@@ -4,7 +4,7 @@ import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.regex.Pattern;
 
-public class testTest {
+public class TestTest {
 
     @org.junit.Test
     public void testRegular() {

@@ -16,7 +16,7 @@ public class Arguments {
         originalArguments = args;
         arguments = new ArrayList<>(Arrays.asList(args));
         try {
-            if(Integer.valueOf(args[1]) > Integer.valueOf(args[2])){
+            if(Integer.parseInt(args[1]) > Integer.parseInt(args[2])){
                 String tmp = arguments.get(1);
                 arguments.set(1,arguments.get(2));
                 arguments.set(2,tmp);
