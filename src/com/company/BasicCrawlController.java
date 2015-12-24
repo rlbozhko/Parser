@@ -49,7 +49,7 @@ public class BasicCrawlController {
      * numberOfCrawlers shows the number of concurrent threads that should
      * be initiated for crawling.
      */
-        int numberOfCrawlers = 4;
+        int numberOfCrawlers = 8;
 
         CrawlConfig config = new CrawlConfig();
 
@@ -95,7 +95,7 @@ public class BasicCrawlController {
      * want to start a fresh crawl, you need to delete the contents of
      * rootFolder manually.
      */
-        config.setResumableCrawling(false);
+        config.setResumableCrawling(true);
 
     /*
      * Instantiate the controller for this crawl.

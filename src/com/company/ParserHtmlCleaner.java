@@ -13,7 +13,7 @@ import java.util.Scanner;
 
 public class ParserHtmlCleaner {
 
-    public final static String targetUrl ="http://rozetka.com.ua/pressboards/c185692/";
+    public final static String targetUrl ="http://hard.rozetka.com.ua/";
             //"http://hard.rozetka.com.ua/ssd/c80109/price=1000-3000/";
 //"http://rozetka.com.ua/"
 
@@ -27,15 +27,16 @@ public class ParserHtmlCleaner {
 
 
             XPath xpath = XPathFactory.newInstance().newXPath();
-            String str = (String) xpath.evaluate("//*[@id=\"sort_price\"]",
+            String str = (String) xpath.evaluate("//a[contains(@href,'hard.rozetka.com.ua/ssd/c80109/')]/@href",
                     doc, XPathConstants.STRING);
 
-            //   price=858-2937/
-            //xpath.evaluate("//*[contains(@href,'rozetka.com.ua')]"
-//*[@id="sort_price"]
-       //      "//*[@id=\"block_with_goods\"]/div[1]"
-       //     "//nav/ul/li[1]/div//ul/li[1]//div/ul[2]/li[4]"
+
+
             System.out.println(str);
+
+// if ---здесь код проверяющий что на странице есть //xpath.evaluate("//*[@id=\"sort_price\"]"
+            // тогда и только тогда вызываем
+            ParseSortPrice(str,2000,3000);
 
     /*        HtmlCleaner cleaner = new HtmlCleaner();
             TagNode html = cleaner.clean(new File("source.html"));
@@ -96,6 +97,22 @@ public class ParserHtmlCleaner {
         }
         return result.toString();
     }
+
+    public static void ParseSortPrice(final String url,int minPrice,int maxPrice){
+        int page = 1;
+        String sortedUrl = url + "page="+page+";"+"price="+minPrice+"-"+maxPrice+"/";
+        System.out.println(sortedUrl);
+
+        //Todo
+        // Продолжать цикл если на странице есть //div[@name="more_goods"]
+
+        //вытащить   // "//*[@id=\"block_with_goods\"]/div[1]"
+        //вытащить все <div class="g-price-uah">2?255<span class="g-price-uah-sign">?грн</span></div>
+        //<a href="http://hard.rozetka.com.ua/transcend_ts256gssd360s/p6553018/" onclick="document.fireEvent('goodsTitleClick', {extend_event: [{name: 'goods_id', value: 6553018}]}); return true">
+        //Transcend SSD360S Premium 256GB 2.5" SATA III MLC (TS256GSSD360S)
+        //        </a>
+    }
+
 
     public static String getPageHtml(String url) {
         String html = "";
