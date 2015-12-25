@@ -2,26 +2,33 @@ package com.company;
 
 import org.htmlcleaner.TagNode;
 import org.htmlcleaner.XPatherException;
+import org.w3c.dom.NodeList;
 
 import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.xpath.XPathConstants;
+import javax.xml.xpath.XPathExpressionException;
 import java.io.IOException;
+import java.util.Collections;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 public class Main {
+    public static Map<String, Boolean> browseLinkMap = Collections.synchronizedMap(new LinkedHashMap<>());
 
-    public static void main(String[] args) throws IOException, XPatherException, ParserConfigurationException {
+    public static void main(String[] args) throws IOException, XPatherException, ParserConfigurationException, XPathExpressionException {
 
 
         //пример ввода для теста
         String[] args1 = new String[3];
-        args1[0] ="http://rozetka.com.ua/";
-        args1[1] ="2000";
-        args1[2] ="2500";
+        args1[0] = "http://rozetka.com.ua/";
+        args1[1] = "2000";
+        args1[2] = "2500";
 
 
 // после теста в этой строчке args1 поменять на args
         Arguments arguments = new Arguments(args1);
 
-        if(!arguments.isValidArguments()){
+        if (!arguments.isValidArguments()) {
             System.out.println("Неправильные аргументы. Необходимые аргументы: ");
             System.out.println(" ссылка на сайт: http://rozetka.com.ua/");
             System.out.println(" цена от(целое число): 1000");
@@ -30,6 +37,30 @@ public class Main {
         }
 
         String url = arguments.getArg(0);
+        url = "http://rozetka.com.ua/";
+//url = "http://rozetka.com.ua/pressboards/c185692/";
+        browseLinkMap.put(url, true);
+
+        for (Map.Entry<String, Boolean> entry : browseLinkMap.entrySet()) {
+            if (entry.getValue()) {
+                entry.setValue(false);
+                String urlBrowse = entry.getKey();
+                Parser browsePage = new Parser(urlBrowse);
+                if ((Boolean) browsePage.jaxp("//*[@id=\"sort_price\"]", XPathConstants.BOOLEAN)) {
+                    System.out.println("7777777777777777777 " + urlBrowse);
+                    //TODO:метод сохранения Имя+Цена
+                }
+                System.out.println("Нет фильтра цен " + urlBrowse);
+
+                NodeList nodes = (NodeList) browsePage.jaxp("//a[contains(@href,'rozetka.com.ua')]/@href", XPathConstants.NODESET);
+                for (int i = 0; i < nodes.getLength(); i++) {
+                    String urlTmp = (nodes.item(i).getNodeValue());
+
+                }
+
+
+            }
+        }
 
 
         Parser mainPage = new Parser(url);

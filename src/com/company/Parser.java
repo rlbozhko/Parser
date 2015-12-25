@@ -16,23 +16,27 @@ import java.util.Arrays;
 public class Parser {
 
     HtmlCleaner cleaner;
-    Document document;
+    Document dom;
     String url;
     XPath xpath;
-    TagNode html;
+    TagNode rootHtml;
 
 
     public Parser(String url) throws ParserConfigurationException, IOException {
         this.url = url;
         cleaner = new HtmlCleaner();
         xpath = XPathFactory.newInstance().newXPath();
-        html = cleaner.clean(URI.create(url).toURL());
-        document = new DomSerializer(new CleanerProperties()).createDOM(html);
+        rootHtml = cleaner.clean(URI.create(url).toURL());
+        dom = new DomSerializer(new CleanerProperties()).createDOM(rootHtml);
     }
 
 
-    public Document getDocument() {
-        return document;
+    public Document getDom() {
+        return dom;
+    }
+
+    public String findText(String xp) throws XPatherException {
+        return findText(xp, rootHtml);
     }
 
     public String findText(String xp, TagNode t) throws XPatherException {
@@ -40,7 +44,7 @@ public class Parser {
     }
 
     public TagNode findOneNode(String xp) throws XPatherException {
-        return findOneNode(xp, html);
+        return findOneNode(xp, rootHtml);
     }
 
     private TagNode findOneNode(String xp, TagNode parent) throws XPatherException {
@@ -49,7 +53,7 @@ public class Parser {
     }
 
     public TagNode[] findAllNodes(String xp) throws XPatherException {
-        return findAllNodes(xp, html);
+        return findAllNodes(xp, rootHtml);
     }
 
     public TagNode[] findAllNodes(String xp, TagNode parent) throws XPatherException {
@@ -59,12 +63,12 @@ public class Parser {
 
     public String jaxp(String xp) throws XPathExpressionException {
         return (String) xpath.evaluate(xp,
-                getDocument(), XPathConstants.STRING);
+                getDom(), XPathConstants.STRING);
     }
 
     public Object jaxp(String xp, QName xPathConstants) throws XPathExpressionException {
         return xpath.evaluate(xp,
-                getDocument(), xPathConstants);
+                getDom(), xPathConstants);
     }
 
 
