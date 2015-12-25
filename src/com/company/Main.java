@@ -11,14 +11,15 @@ import java.io.IOException;
 import java.util.*;
 import java.util.regex.Pattern;
 
-static Set<Item>cacheItems=Collections.synchronizedSet(new HashSet<>());
 
 public class Main {
     public static Set<String> newUrls = Collections.synchronizedSet(new HashSet<>());
     public static Set<String> oldUrls = Collections.synchronizedSet(new HashSet<>());
     public static Set<String> cacheUrls = Collections.synchronizedSet(new HashSet<>());
 
-    static Set<Item> cacheItems = Collections.synchronizedSet(new HashSet<>());
+    public static Set<Item> cacheItems = Collections.synchronizedSet(new HashSet<>());
+
+
 
     private static final Pattern ROZETKA_CATEGORY = Pattern.compile(".*/c[0-9]*/");
     private static int counter = 0;
@@ -65,7 +66,7 @@ public class Main {
                         if ((Boolean) browsePage.jaxp("//*[@id=\"sort_price\"]", XPathConstants.BOOLEAN)) {
                             System.out.println("7777777777777777777 " + urlBrowse);
                             //TODO:метод сохранения Имя+Цена
-                            ParseSortPrice(browsePage, arguments.getArg(1), arguments.getArg(2), HashSet < Item > cacheItems);
+                            ParseSortPrice(browsePage, arguments.getArg(1), arguments.getArg(2),cacheItems);
                         } else {
                             System.out.println("Нет фильтра цен " + urlBrowse);
 
@@ -118,9 +119,9 @@ public class Main {
 
     }
 
-    public static void ParseSortPrice(Parser browsePage, String minPrice, String maxPrice, HashSet<Item> cachItems) {
+    public static void ParseSortPrice(Parser browsePage, String minPrice, String maxPrice, Set<Item> cacheItems) {
         int page = 1;
-        String sortedUrl = url + "page=" + page + ";" + "price=" + minPrice + "-" + maxPrice + "/";
+        String sortedUrl = browsePage.getUrl() + "page=" + page + ";" + "price=" + minPrice.trim() + "-" + maxPrice.trim() + "/";
         System.out.println(sortedUrl);
 
         //Todo ParseSortPrice
