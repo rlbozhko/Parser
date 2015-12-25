@@ -22,20 +22,14 @@ public class Main {
 
 
     private static final Pattern ROZETKA_CATEGORY = Pattern.compile(".*/c[0-9]*/");
+    //TODO delete counter
     private static int counter = 0;
+
 
     public static void main(String[] args) throws IOException, XPatherException, ParserConfigurationException, XPathExpressionException {
         List<String> badUrls = Collections.synchronizedList(new ArrayList<>());
 
-        //пример ввода для теста
-        String[] args1 = new String[3];
-        args1[0] = "http://rozetka.com.ua/";
-        args1[1] = "2000";
-        args1[2] = "2500";
-
-
-// после теста в этой строчке args1 поменять на args
-        Arguments arguments = new Arguments(args1);
+        Arguments arguments = new Arguments(args);
 
         if (!arguments.isValidArguments()) {
             System.out.println("Неправильные аргументы. Необходимые аргументы: ");
@@ -46,8 +40,8 @@ public class Main {
         }
 
         String url = arguments.getArg(0);
-        url = "http://rozetka.com.ua/";
-//url = "http://rozetka.com.ua/pressboards/c185692/";
+
+        //url = "http://rozetka.com.ua/pressboards/c185692/";
         newUrls.add(url);
 
         Boolean flagContinue;

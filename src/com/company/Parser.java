@@ -22,14 +22,14 @@ public class Parser {
     private TagNode rootHtml;
 
 
-    public Parser(String url) throws ParserConfigurationException {
+    public Parser(String url)  {
         this.url = url;
         cleaner = new HtmlCleaner();
         xpath = XPathFactory.newInstance().newXPath();
         try {
             rootHtml = cleaner.clean(URI.create(url).toURL());
             dom = new DomSerializer(new CleanerProperties()).createDOM(rootHtml);
-        } catch (IOException e) {
+        } catch (Exception e) {
             System.out.println("BADURL "+url);
             cleaner = null;
             dom = null;
@@ -70,6 +70,7 @@ public class Parser {
 
     public TagNode[] findAllNodes(String xp, TagNode parent) throws XPatherException {
         Object[] result = parent.evaluateXPath(xp);
+        //TODO Collections.emptyList() toArray
         return result != null && result.length > 0 ? Arrays.asList(result).toArray(new TagNode[]{}) : null;
     }
 

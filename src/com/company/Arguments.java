@@ -7,9 +7,10 @@ import java.util.List;
 public class Arguments {
     // TODO: ADD Enum - Arguments HOST, LOW_PRICE, HIGH_PRICE
 
-    final String[] originalArguments;
-    List<String> arguments;
-    boolean valid = false;
+    final private String[] originalArguments;
+    //Todo верни массив
+    private List<String> arguments;
+    private boolean  valid = false;
 
 
     public Arguments(String[] args) {
@@ -27,8 +28,8 @@ public class Arguments {
             System.err.println(" ссылка на сайт: http://rozetka.com.ua/");
             System.err.println(" цена от(целое число): 1000");
             System.err.println(" цена до(целое число): 1100");
-            e.printStackTrace();
-            throw new RuntimeException();
+
+            throw new RuntimeException(e);
         }
 
         if (args != null && args.length == 3) {
