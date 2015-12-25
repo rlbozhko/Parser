@@ -1,6 +1,6 @@
 package com.company;
 
-import org.htmlcleaner.TagNode;
+import com.company.entities.Item;
 import org.htmlcleaner.XPatherException;
 import org.w3c.dom.NodeList;
 
@@ -11,10 +11,15 @@ import java.io.IOException;
 import java.util.*;
 import java.util.regex.Pattern;
 
+static Set<Item>cacheItems=Collections.synchronizedSet(new HashSet<>());
+
 public class Main {
     public static Set<String> newUrls = Collections.synchronizedSet(new HashSet<>());
     public static Set<String> oldUrls = Collections.synchronizedSet(new HashSet<>());
     public static Set<String> cacheUrls = Collections.synchronizedSet(new HashSet<>());
+
+    static Set<Item> cacheItems = Collections.synchronizedSet(new HashSet<>());
+
     private static final Pattern ROZETKA_CATEGORY = Pattern.compile(".*/c[0-9]*/");
     private static int counter = 0;
 
@@ -60,6 +65,7 @@ public class Main {
                         if ((Boolean) browsePage.jaxp("//*[@id=\"sort_price\"]", XPathConstants.BOOLEAN)) {
                             System.out.println("7777777777777777777 " + urlBrowse);
                             //TODO:метод сохранения Имя+Цена
+                            ParseSortPrice(browsePage, arguments.getArg(1), arguments.getArg(2), HashSet < Item > cacheItems);
                         } else {
                             System.out.println("Нет фильтра цен " + urlBrowse);
 
@@ -69,7 +75,7 @@ public class Main {
                                 if (ROZETKA_CATEGORY.matcher(href).matches()) {
                                     if (cacheUrls.add(href)) {
                                         counter++;
-                                        System.out.println("кэш+ " + counter +" "+ href);
+                                        System.out.println("кэш+ " + counter + " " + href);
                                         flagContinue = true;
                                     }
                                 }
@@ -94,10 +100,13 @@ public class Main {
         System.out.println("cacheUrls.size =" + cacheUrls.size());
         System.out.println("oldUrls.size   =" + oldUrls.size());
         System.out.println("newUrls.size   =" + newUrls.size());
+        for (String s : newUrls) {
+            System.out.println(s);
+        }
         System.out.println("ZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZ");
 
 
-        Parser mainPage = new Parser(url);
+     /*   Parser mainPage = new Parser(url);
 
         TagNode mainMenu = mainPage.findOneNode("//nav/ul");
         TagNode[] categories = mainPage.findAllNodes("//li", mainMenu);
@@ -105,7 +114,23 @@ public class Main {
         for (TagNode category : categories) {
             i++;
             System.out.println(String.format("%d. %s", i, mainPage.findText("//a/text()[last()]", category).trim()));
-        }
+        }*/
 
     }
+
+    public static void ParseSortPrice(Parser browsePage, String minPrice, String maxPrice, HashSet<Item> cachItems) {
+        int page = 1;
+        String sortedUrl = url + "page=" + page + ";" + "price=" + minPrice + "-" + maxPrice + "/";
+        System.out.println(sortedUrl);
+
+        //Todo ParseSortPrice
+        // Продолжать цикл если на странице есть //div[@name="more_goods"]
+
+        //вытащить   // "//*[@id=\"block_with_goods\"]/div[1]"
+        //вытащить все <div class="g-price-uah">2?255<span class="g-price-uah-sign">?грн</span></div>
+        //<a href="http://hard.rozetka.com.ua/transcend_ts256gssd360s/p6553018/" onclick="document.fireEvent('goodsTitleClick', {extend_event: [{name: 'goods_id', value: 6553018}]}); return true">
+        //Transcend SSD360S Premium 256GB 2.5" SATA III MLC (TS256GSSD360S)
+        //        </a>
+    }
+
 }
