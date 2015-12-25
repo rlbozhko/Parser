@@ -15,21 +15,33 @@ import java.util.Arrays;
 
 public class Parser {
 
-    HtmlCleaner cleaner;
-    Document dom;
-    String url;
-    XPath xpath;
-    TagNode rootHtml;
+    private HtmlCleaner cleaner;
+    private Document dom;
+    private String url;
+    private XPath xpath;
+    private TagNode rootHtml;
 
 
-    public Parser(String url) throws ParserConfigurationException, IOException {
+    public Parser(String url) throws ParserConfigurationException {
         this.url = url;
         cleaner = new HtmlCleaner();
         xpath = XPathFactory.newInstance().newXPath();
-        rootHtml = cleaner.clean(URI.create(url).toURL());
-        dom = new DomSerializer(new CleanerProperties()).createDOM(rootHtml);
+        try {
+            rootHtml = cleaner.clean(URI.create(url).toURL());
+            dom = new DomSerializer(new CleanerProperties()).createDOM(rootHtml);
+        } catch (IOException e) {
+            System.out.println(url);
+            cleaner = null;
+            dom = null;
+            xpath = null;
+            rootHtml = null;
+        }
+
     }
 
+    public String getUrl() {
+        return url;
+    }
 
     public Document getDom() {
         return dom;

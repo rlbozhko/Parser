@@ -8,20 +8,18 @@ import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathExpressionException;
 import java.io.IOException;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 import java.util.regex.Pattern;
 
 public class Main {
     public static Set<String> newUrls = Collections.synchronizedSet(new HashSet<>());
     public static Set<String> oldUrls = Collections.synchronizedSet(new HashSet<>());
-    public static Set<String> casheUrls = Collections.synchronizedSet(new HashSet<>());
+    public static Set<String> cacheUrls = Collections.synchronizedSet(new HashSet<>());
     private static final Pattern ROZETKA_CATEGORY = Pattern.compile(".*/c[0-9]*/.*");
     private static int counter = 0;
 
     public static void main(String[] args) throws IOException, XPatherException, ParserConfigurationException, XPathExpressionException {
-
+        List<String> badUrls = Collections.synchronizedList(new ArrayList<>());
 
         //пример ввода для теста
         String[] args1 = new String[3];
@@ -49,36 +47,43 @@ public class Main {
         Boolean flagContinue;
         do {
             flagContinue = false;
-            casheUrls.clear();
+            cacheUrls.clear();
             counter = 0;
             newUrls.removeAll(oldUrls);
             for (String urlBrowse : newUrls) {
                 if (oldUrls.add(urlBrowse)) {
 
                     Parser browsePage = new Parser(urlBrowse);
-                    if ((Boolean) browsePage.jaxp("//*[@id=\"sort_price\"]", XPathConstants.BOOLEAN)) {
-                        System.out.println("7777777777777777777 " + urlBrowse);
-                        //TODO:метод сохранения Имя+Цена
+                    if (browsePage.getDom() == null) {
+                        badUrls.add(browsePage.getUrl());
                     } else {
-                        System.out.println("Нет фильтра цен " + urlBrowse);
+                        if ((Boolean) browsePage.jaxp("//*[@id=\"sort_price\"]", XPathConstants.BOOLEAN)) {
+                            System.out.println("7777777777777777777 " + urlBrowse);
+                            //TODO:метод сохранения Имя+Цена
+                        } else {
+                            System.out.println("Нет фильтра цен " + urlBrowse);
 
-                        NodeList nodes = (NodeList) browsePage.jaxp("//a[contains(@href,'rozetka.com.ua')]/@href", XPathConstants.NODESET);
-                        for (int i = 0; i < nodes.getLength(); i++) {
-                            String href = (nodes.item(i).getNodeValue());
-                            if (ROZETKA_CATEGORY.matcher(href).matches()) {
-                                casheUrls.add(href);
-                                counter++;
-                                System.out.println(href + "Вставили" + counter);
-                                flagContinue = true;
+                            NodeList nodes = (NodeList) browsePage.jaxp("//a[contains(@href,'rozetka.com.ua')]/@href", XPathConstants.NODESET);
+                            for (int i = 0; i < nodes.getLength(); i++) {
+                                String href = (nodes.item(i).getNodeValue());
+                                if (ROZETKA_CATEGORY.matcher(href).matches()) {
+                                    if (cacheUrls.add(href)) {
+                                        counter++;
+                                        System.out.println("кэш+" + counter + href);
+                                        flagContinue = true;
+                                    }
+                                }
                             }
+
                         }
-                        System.out.println("Вставили" + counter);
                     }
                 }
             }
-            casheUrls.removeAll(oldUrls);
-            newUrls.addAll(casheUrls);
-        } while (flagContinue && casheUrls.size() > 0);
+            cacheUrls.removeAll(oldUrls);
+            counter = newUrls.size();
+            newUrls.addAll(cacheUrls);
+            System.out.println("Вставили" + (newUrls.size() - counter));
+        } while (flagContinue && cacheUrls.size() > 0);
 
 
         Parser mainPage = new Parser(url);
