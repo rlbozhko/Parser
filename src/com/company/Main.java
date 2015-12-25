@@ -11,9 +11,13 @@ import java.io.IOException;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.regex.Pattern;
 
 public class Main {
     public static Map<String, Boolean> browseLinkMap = Collections.synchronizedMap(new LinkedHashMap<>());
+    public static Map<String, Boolean> addLinkMap = Collections.synchronizedMap(new LinkedHashMap<>());
+    private static final Pattern ROZETKA_CATEGORY = Pattern.compile(".*/c[0-9]*/.*");
+    private static int counter = 0;
 
     public static void main(String[] args) throws IOException, XPatherException, ParserConfigurationException, XPathExpressionException {
 
@@ -40,27 +44,36 @@ public class Main {
         url = "http://rozetka.com.ua/";
 //url = "http://rozetka.com.ua/pressboards/c185692/";
         browseLinkMap.put(url, true);
+        Boolean flagContinue;
+        do {
+            addLinkMap.clear();
+            counter=0;
+            for (Map.Entry<String, Boolean> entry : browseLinkMap.entrySet()) {
+                if (entry.getValue()) {
+                    entry.setValue(false);
+                    String urlBrowse = entry.getKey();
+                    Parser browsePage = new Parser(urlBrowse);
+                    if ((Boolean) browsePage.jaxp("//*[@id=\"sort_price\"]", XPathConstants.BOOLEAN)) {
+                        System.out.println("7777777777777777777 " + urlBrowse);
+                        //TODO:метод сохранения Имя+Цена
+                    } else {
+                        System.out.println("Нет фильтра цен " + urlBrowse);
 
-        for (Map.Entry<String, Boolean> entry : browseLinkMap.entrySet()) {
-            if (entry.getValue()) {
-                entry.setValue(false);
-                String urlBrowse = entry.getKey();
-                Parser browsePage = new Parser(urlBrowse);
-                if ((Boolean) browsePage.jaxp("//*[@id=\"sort_price\"]", XPathConstants.BOOLEAN)) {
-                    System.out.println("7777777777777777777 " + urlBrowse);
-                    //TODO:метод сохранения Имя+Цена
+                        NodeList nodes = (NodeList) browsePage.jaxp("//a[contains(@href,'rozetka.com.ua')]/@href", XPathConstants.NODESET);
+                        for (int i = 0; i < nodes.getLength(); i++) {
+                            String href = (nodes.item(i).getNodeValue());
+                            if (ROZETKA_CATEGORY.matcher(href).matches()) {
+                                addLinkMap.put(href, true);
+                                counter++;
+                                System.out.println(href + "Вставили" + counter);
+                            }
+                        }
+                        System.out.println("Вставили" + counter);
+                    }
                 }
-                System.out.println("Нет фильтра цен " + urlBrowse);
-
-                NodeList nodes = (NodeList) browsePage.jaxp("//a[contains(@href,'rozetka.com.ua')]/@href", XPathConstants.NODESET);
-                for (int i = 0; i < nodes.getLength(); i++) {
-                    String urlTmp = (nodes.item(i).getNodeValue());
-
-                }
-
-
             }
-        }
+            browseLinkMap.putAll(addLinkMap);
+        } while (addLinkMap.size()>0);
 
 
         Parser mainPage = new Parser(url);
