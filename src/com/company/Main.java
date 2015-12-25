@@ -15,7 +15,7 @@ public class Main {
     public static Set<String> newUrls = Collections.synchronizedSet(new HashSet<>());
     public static Set<String> oldUrls = Collections.synchronizedSet(new HashSet<>());
     public static Set<String> cacheUrls = Collections.synchronizedSet(new HashSet<>());
-    private static final Pattern ROZETKA_CATEGORY = Pattern.compile(".*/c[0-9]*/.*");
+    private static final Pattern ROZETKA_CATEGORY = Pattern.compile(".*/c[0-9]*/");
     private static int counter = 0;
 
     public static void main(String[] args) throws IOException, XPatherException, ParserConfigurationException, XPathExpressionException {
@@ -69,7 +69,7 @@ public class Main {
                                 if (ROZETKA_CATEGORY.matcher(href).matches()) {
                                     if (cacheUrls.add(href)) {
                                         counter++;
-                                        System.out.println("кэш+" + counter + href);
+                                        System.out.println("кэш+ " + counter +" "+ href);
                                         flagContinue = true;
                                     }
                                 }
