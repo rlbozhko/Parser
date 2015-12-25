@@ -9,13 +9,14 @@ import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathExpressionException;
 import java.io.IOException;
 import java.util.Collections;
-import java.util.LinkedHashMap;
-import java.util.Map;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.regex.Pattern;
 
 public class Main {
-    public static Map<String, Boolean> browseLinkMap = Collections.synchronizedMap(new LinkedHashMap<>());
-    public static Map<String, Boolean> addLinkMap = Collections.synchronizedMap(new LinkedHashMap<>());
+    public static Set<String> newUrls = Collections.synchronizedSet(new HashSet<>());
+    public static Set<String> oldUrls = Collections.synchronizedSet(new HashSet<>());
+    public static Set<String> casheUrls = Collections.synchronizedSet(new HashSet<>());
     private static final Pattern ROZETKA_CATEGORY = Pattern.compile(".*/c[0-9]*/.*");
     private static int counter = 0;
 
@@ -43,15 +44,17 @@ public class Main {
         String url = arguments.getArg(0);
         url = "http://rozetka.com.ua/";
 //url = "http://rozetka.com.ua/pressboards/c185692/";
-        browseLinkMap.put(url, true);
+        newUrls.add(url);
+
         Boolean flagContinue;
         do {
-            addLinkMap.clear();
-            counter=0;
-            for (Map.Entry<String, Boolean> entry : browseLinkMap.entrySet()) {
-                if (entry.getValue()) {
-                    entry.setValue(false);
-                    String urlBrowse = entry.getKey();
+            flagContinue = false;
+            casheUrls.clear();
+            counter = 0;
+            newUrls.removeAll(oldUrls);
+            for (String urlBrowse : newUrls) {
+                if (oldUrls.add(urlBrowse)) {
+
                     Parser browsePage = new Parser(urlBrowse);
                     if ((Boolean) browsePage.jaxp("//*[@id=\"sort_price\"]", XPathConstants.BOOLEAN)) {
                         System.out.println("7777777777777777777 " + urlBrowse);
@@ -63,17 +66,19 @@ public class Main {
                         for (int i = 0; i < nodes.getLength(); i++) {
                             String href = (nodes.item(i).getNodeValue());
                             if (ROZETKA_CATEGORY.matcher(href).matches()) {
-                                addLinkMap.put(href, true);
+                                casheUrls.add(href);
                                 counter++;
                                 System.out.println(href + "Вставили" + counter);
+                                flagContinue = true;
                             }
                         }
                         System.out.println("Вставили" + counter);
                     }
                 }
             }
-            browseLinkMap.putAll(addLinkMap);
-        } while (addLinkMap.size()>0);
+            casheUrls.removeAll(oldUrls);
+            newUrls.addAll(casheUrls);
+        } while (flagContinue && casheUrls.size() > 0);
 
 
         Parser mainPage = new Parser(url);
