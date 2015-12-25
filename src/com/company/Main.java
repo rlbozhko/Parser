@@ -1,6 +1,7 @@
 package com.company;
 
 import com.company.entities.Item;
+import org.htmlcleaner.TagNode;
 import org.htmlcleaner.XPatherException;
 import org.w3c.dom.NodeList;
 
@@ -18,7 +19,6 @@ public class Main {
     public static Set<String> cacheUrls = Collections.synchronizedSet(new HashSet<>());
 
     public static Set<Item> cacheItems = Collections.synchronizedSet(new HashSet<>());
-
 
 
     private static final Pattern ROZETKA_CATEGORY = Pattern.compile(".*/c[0-9]*/");
@@ -64,11 +64,11 @@ public class Main {
                         badUrls.add(browsePage.getUrl());
                     } else {
                         if ((Boolean) browsePage.jaxp("//*[@id=\"sort_price\"]", XPathConstants.BOOLEAN)) {
-                            System.out.println("7777777777777777777 " + urlBrowse);
+  //                          System.out.println("7777777777777777777 " + urlBrowse);
                             //TODO:метод сохранения Имя+Цена
-                            ParseSortPrice(browsePage, arguments.getArg(1), arguments.getArg(2),cacheItems);
+                            ParseSortPrice(browsePage, arguments.getArg(1), arguments.getArg(2), cacheItems);
                         } else {
-                            System.out.println("Нет фильтра цен " + urlBrowse);
+  //                          System.out.println("Нет фильтра цен " + urlBrowse);
 
                             NodeList nodes = (NodeList) browsePage.jaxp("//a[contains(@href,'rozetka.com.ua')]/@href", XPathConstants.NODESET);
                             for (int i = 0; i < nodes.getLength(); i++) {
@@ -76,7 +76,7 @@ public class Main {
                                 if (ROZETKA_CATEGORY.matcher(href).matches()) {
                                     if (cacheUrls.add(href)) {
                                         counter++;
-                                        System.out.println("кэш+ " + counter + " " + href);
+  //                                      System.out.println("кэш+ " + counter + " " + href);
                                         flagContinue = true;
                                     }
                                 }
@@ -89,22 +89,21 @@ public class Main {
             cacheUrls.removeAll(oldUrls);
             counter = newUrls.size();
             newUrls.addAll(cacheUrls);
-            System.out.println("XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX");
+/*            System.out.println("XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX");
             System.out.println("cacheUrls.size =" + cacheUrls.size());
             System.out.println("oldUrls.size   =" + oldUrls.size());
             System.out.println("newUrls.size   =" + newUrls.size());
             System.out.println("XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX");
-
-            System.out.println("Вставили" + (newUrls.size() - counter));
+            System.out.println("Вставили" + (newUrls.size() - counter));*/
         } while (flagContinue && cacheUrls.size() > 0);
-        System.out.println("ZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZ");
+/*        System.out.println("ZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZ");
         System.out.println("cacheUrls.size =" + cacheUrls.size());
         System.out.println("oldUrls.size   =" + oldUrls.size());
         System.out.println("newUrls.size   =" + newUrls.size());
         for (String s : newUrls) {
             System.out.println(s);
         }
-        System.out.println("ZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZ");
+        System.out.println("ZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZ");*/
 
 
      /*   Parser mainPage = new Parser(url);
@@ -119,19 +118,30 @@ public class Main {
 
     }
 
-    public static void ParseSortPrice(Parser browsePage, String minPrice, String maxPrice, Set<Item> cacheItems) {
+    public static void ParseSortPrice(Parser browsePage, String minPrice, String maxPrice, Set<Item> cacheItems) throws ParserConfigurationException, XPatherException {
         int page = 1;
         String sortedUrl = browsePage.getUrl() + "page=" + page + ";" + "price=" + minPrice.trim() + "-" + maxPrice.trim() + "/";
-        System.out.println(sortedUrl);
 
-        //Todo ParseSortPrice
-        // Продолжать цикл если на странице есть //div[@name="more_goods"]
+  //      System.out.println(sortedUrl);
 
-        //вытащить   // "//*[@id=\"block_with_goods\"]/div[1]"
-        //вытащить все <div class="g-price-uah">2?255<span class="g-price-uah-sign">?грн</span></div>
-        //<a href="http://hard.rozetka.com.ua/transcend_ts256gssd360s/p6553018/" onclick="document.fireEvent('goodsTitleClick', {extend_event: [{name: 'goods_id', value: 6553018}]}); return true">
-        //Transcend SSD360S Premium 256GB 2.5" SATA III MLC (TS256GSSD360S)
-        //        </a>
+        Parser mainPage = new Parser(sortedUrl);
+
+        TagNode blockWithGoods = mainPage.findOneNode("//*[@id='block_with_goods']/div[1]");
+        TagNode[] goods = mainPage.findAllNodes("//div[@class='g-i-tile-i-title clearfix']", blockWithGoods);
+        int i = 0;
+        for (TagNode good : goods) {
+            i++;
+            System.out.println(mainPage.findText("//a/text()[last()]", good).trim());
+
+            //Todo: ParseSortPrice
+            // Продолжать цикл если на странице есть //div[@name="more_goods"]
+
+            //вытащить   // "//*[@id=\"block_with_goods\"]/div[1]"
+            //вытащить все <div class="g-price-uah">2?255<span class="g-price-uah-sign">?грн</span></div>
+            //<a href="http://hard.rozetka.com.ua/transcend_ts256gssd360s/p6553018/" onclick="document.fireEvent('goodsTitleClick', {extend_event: [{name: 'goods_id', value: 6553018}]}); return true">
+            //Transcend SSD360S Premium 256GB 2.5" SATA III MLC (TS256GSSD360S)
+            //        </a>
+        }
+
     }
-
 }
