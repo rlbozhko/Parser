@@ -82,8 +82,19 @@ public class Main {
             cacheUrls.removeAll(oldUrls);
             counter = newUrls.size();
             newUrls.addAll(cacheUrls);
+            System.out.println("XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX");
+            System.out.println("cacheUrls.size =" + cacheUrls.size());
+            System.out.println("oldUrls.size   =" + oldUrls.size());
+            System.out.println("newUrls.size   =" + newUrls.size());
+            System.out.println("XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX");
+
             System.out.println("Вставили" + (newUrls.size() - counter));
         } while (flagContinue && cacheUrls.size() > 0);
+        System.out.println("ZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZ");
+        System.out.println("cacheUrls.size =" + cacheUrls.size());
+        System.out.println("oldUrls.size   =" + oldUrls.size());
+        System.out.println("newUrls.size   =" + newUrls.size());
+        System.out.println("ZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZ");
 
 
         Parser mainPage = new Parser(url);
