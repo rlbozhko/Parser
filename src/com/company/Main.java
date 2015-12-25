@@ -64,11 +64,11 @@ public class Main {
                         badUrls.add(browsePage.getUrl());
                     } else {
                         if ((Boolean) browsePage.jaxp("//*[@id=\"sort_price\"]", XPathConstants.BOOLEAN)) {
-  //                          System.out.println("7777777777777777777 " + urlBrowse);
+                            //                          System.out.println("7777777777777777777 " + urlBrowse);
                             //TODO:метод сохранения Имя+Цена
                             ParseSortPrice(browsePage, arguments.getArg(1), arguments.getArg(2), cacheItems);
                         } else {
-  //                          System.out.println("Нет фильтра цен " + urlBrowse);
+                            //                          System.out.println("Нет фильтра цен " + urlBrowse);
 
                             NodeList nodes = (NodeList) browsePage.jaxp("//a[contains(@href,'rozetka.com.ua')]/@href", XPathConstants.NODESET);
                             for (int i = 0; i < nodes.getLength(); i++) {
@@ -76,7 +76,7 @@ public class Main {
                                 if (ROZETKA_CATEGORY.matcher(href).matches()) {
                                     if (cacheUrls.add(href)) {
                                         counter++;
-  //                                      System.out.println("кэш+ " + counter + " " + href);
+                                        //                                      System.out.println("кэш+ " + counter + " " + href);
                                         flagContinue = true;
                                     }
                                 }
@@ -122,26 +122,30 @@ public class Main {
         int page = 1;
         String sortedUrl = browsePage.getUrl() + "page=" + page + ";" + "price=" + minPrice.trim() + "-" + maxPrice.trim() + "/";
 
-  //      System.out.println(sortedUrl);
+        //      System.out.println(sortedUrl);
 
         Parser mainPage = new Parser(sortedUrl);
 
         TagNode blockWithGoods = mainPage.findOneNode("//*[@id='block_with_goods']/div[1]");
-        TagNode[] goods = mainPage.findAllNodes("//div[@class='g-i-tile-i-title clearfix']", blockWithGoods);
-        int i = 0;
-        for (TagNode good : goods) {
-            i++;
-            System.out.println(mainPage.findText("//a/text()[last()]", good).trim());
+        if (blockWithGoods != null) {
+            TagNode[] goods = mainPage.findAllNodes("//div[@class='g-i-tile-i-title clearfix']", blockWithGoods);
+            int i = 0;
+            if (goods != null) {
+                for (TagNode good : goods) {
+                    i++;
+                    System.out.println(mainPage.findText("//a/text()[last()]", good).trim());
 
-            //Todo: ParseSortPrice
-            // Продолжать цикл если на странице есть //div[@name="more_goods"]
+                    //Todo: ParseSortPrice
+                    // Продолжать цикл если на странице есть //div[@name="more_goods"]
 
-            //вытащить   // "//*[@id=\"block_with_goods\"]/div[1]"
-            //вытащить все <div class="g-price-uah">2?255<span class="g-price-uah-sign">?грн</span></div>
-            //<a href="http://hard.rozetka.com.ua/transcend_ts256gssd360s/p6553018/" onclick="document.fireEvent('goodsTitleClick', {extend_event: [{name: 'goods_id', value: 6553018}]}); return true">
-            //Transcend SSD360S Premium 256GB 2.5" SATA III MLC (TS256GSSD360S)
-            //        </a>
+                    //вытащить   // "//*[@id=\"block_with_goods\"]/div[1]"
+                    //вытащить все <div class="g-price-uah">2?255<span class="g-price-uah-sign">?грн</span></div>
+                    //<a href="http://hard.rozetka.com.ua/transcend_ts256gssd360s/p6553018/" onclick="document.fireEvent('goodsTitleClick', {extend_event: [{name: 'goods_id', value: 6553018}]}); return true">
+                    //Transcend SSD360S Premium 256GB 2.5" SATA III MLC (TS256GSSD360S)
+                    //        </a>
+                }
+
+            }
         }
-
     }
 }
