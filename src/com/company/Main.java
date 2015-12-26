@@ -21,7 +21,7 @@ public class Main {
     public final static Set<Item> cacheItems = Collections.synchronizedSet(new HashSet<>());
 
 
-    private static final Pattern ROZETKA_CATEGORY = Pattern.compile(".*/c[0-9]*/[^=]*");
+    private static final Pattern ROZETKA_CATEGORY = Pattern.compile(".*/c[0-9]*/filter/|.*/c[0-9]*/");
 
 
 
