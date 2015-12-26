@@ -31,7 +31,8 @@ public class Main {
         int counter = 0;
 
         Set<String> cacheUrls = Collections.synchronizedSet(new HashSet<>());
-        System.out.println(new Date(System.currentTimeMillis()));
+        String d =new Date(System.currentTimeMillis()).toString();
+        System.out.println(d);
         List<String> badUrls = Collections.synchronizedList(new ArrayList<>());
 
         Arguments arguments = new Arguments(args);
@@ -78,7 +79,7 @@ public class Main {
                         System.out.println("new BIGPAGE ");
                         if ((Boolean) browsePage.jaxp("//*[@id=\"sort_price\"]", XPathConstants.BOOLEAN)) {
                             System.out.println("GOODS Pages Start");
-                            // System.out.println("7777777777777777777 " + urlBrowse);
+                             System.out.println("7777777777777777777 " + urlBrowse);
                             //TODO cacheItems.addALL(parseSortPrice(browsePa......
                             parseSortPrice(browsePage.getUrl(), arguments.getArg(1), arguments.getArg(2), cacheItems);
                             System.out.println("GOODS Pages Stop");
@@ -104,6 +105,7 @@ public class Main {
         }
         System.out.println("ZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZ");
 
+        System.out.println(d);
         System.out.println(new Date(System.currentTimeMillis()));
     }
 
