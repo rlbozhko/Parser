@@ -23,12 +23,12 @@ public class Main {
 
     private static final Pattern ROZETKA_CATEGORY = Pattern.compile(".*/c[0-9]*/filter/|.*/c[0-9]*/");
 
-
+    private static List<String> badUrls = Collections.synchronizedList(new ArrayList<>());
 
 
     public static void main(String[] args) throws IOException, XPatherException, ParserConfigurationException, XPathExpressionException {
         //TODO delete counter
-        int counter =0;
+        int counter = 0;
 
         Set<String> cacheUrls = Collections.synchronizedSet(new HashSet<>());
         System.out.println(new Date(System.currentTimeMillis()));
@@ -58,7 +58,7 @@ public class Main {
             counter = newUrls.size();
             newUrls.addAll(cacheUrls);
             newUrls.removeAll(oldUrls);
-          //+1
+            //+1
             System.out.println("XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX");
             System.out.println("cacheUrls.size =" + cacheUrls.size());
             System.out.println("oldUrls.size   =" + oldUrls.size());
@@ -84,7 +84,7 @@ public class Main {
                             System.out.println("GOODS Pages Stop");
                         } else {
                             //
-                            System.out.println("new Pages Start Нет фильтра цен"+ urlBrowse);
+                            System.out.println("new Pages Start Нет фильтра цен" + urlBrowse);
                             // TODO cacheUrls.addALL(getNewLinks(Parser browsePage));
                             // cacheUrls = Set<String> getNewLinks(Parser browsePage);
                             getNewLinks(cacheUrls, browsePage);
@@ -128,24 +128,29 @@ public class Main {
 
             System.out.println("Качаем страницу с уст фильтром ");
             mainPage = new Parser(sortedUrl);
-            System.out.println("Выкачали страницу с уст фильтром ");
+            if (mainPage.getDom() == null) {
+                badUrls.add(mainPage.getUrl());
+                blockWithGoods = null;
+            } else {
+                System.out.println("Выкачали страницу с уст фильтром ");
 
-            blockWithGoods = mainPage.findOneNode("//*[@id='block_with_goods']/div[1]");
-            if (blockWithGoods != null) {
-                //TagNode[] goods = mainPage.findAllNodes("//div[@class="g-i-tile-i-title clearfix"]/a/text()", blockWithGoods);
-                NodeList nodes = (NodeList) mainPage.jaxp("//a[contains(@onclick,'goodsTitleClick')]", XPathConstants.NODESET);
-                TagNode[] prices = mainPage.findAllNodes("//div[@class='g-price-uah']", blockWithGoods);
-                String name;
-                String price;
+                blockWithGoods = mainPage.findOneNode("//*[@id='block_with_goods']/div[1]");
+                if (blockWithGoods != null) {
+                    //TagNode[] goods = mainPage.findAllNodes("//div[@class="g-i-tile-i-title clearfix"]/a/text()", blockWithGoods);
+                    NodeList nodes = (NodeList) mainPage.jaxp("//a[contains(@onclick,'goodsTitleClick')]", XPathConstants.NODESET);
+                    TagNode[] prices = mainPage.findAllNodes("//div[@class='g-price-uah']", blockWithGoods);
+                    String name;
+                    String price;
 
 
-                for (int i = 0; i < nodes.getLength(); i++) {
-                    name = (nodes.item(i).getTextContent()).trim();
-                    price = mainPage.findText("/text()", prices[i]).trim().replaceAll("&thinsp;", "");
+                    for (int i = 0; i < nodes.getLength(); i++) {
+                        name = (nodes.item(i).getTextContent()).trim();
+                        price = mainPage.findText("/text()", prices[i]).trim().replaceAll("&thinsp;", "");
 
-                    System.out.println(name);
-                    System.out.println(price);
-                    cacheItems.add(new Item(name, price));
+                        System.out.println(name);
+                        System.out.println(price);
+                        cacheItems.add(new Item(name, price));
+                    }
                 }
             }
         }
