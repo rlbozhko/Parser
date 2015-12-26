@@ -85,7 +85,8 @@ public class Main {
             cacheUrls.removeAll(oldUrls);
             counter = newUrls.size();
             newUrls.addAll(cacheUrls);
-/*            System.out.println("XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX");
+/*          //+1
+ System.out.println("XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX");
             System.out.println("cacheUrls.size =" + cacheUrls.size());
             System.out.println("oldUrls.size   =" + oldUrls.size());
             System.out.println("newUrls.size   =" + newUrls.size());
