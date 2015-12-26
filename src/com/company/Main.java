@@ -69,7 +69,9 @@ public class Main {
             cacheUrls.clear();
             for (String urlBrowse : newUrls) {
                 if (oldUrls.add(urlBrowse)) {
+                    System.out.println("Качаем страницу 1 ");
                     Parser browsePage = new Parser(urlBrowse);
+                    System.out.println("Выкачали страницу 1 ");
                     if (browsePage.getDom() == null) {
                         badUrls.add(browsePage.getUrl());
                     } else {
@@ -124,8 +126,9 @@ public class Main {
             String sortedUrl = url + "page=" + page + ";" + "price=" + minPrice.trim() + "-" + maxPrice.trim() + "/";
             System.out.println(sortedUrl);
 
-
+            System.out.println("Качаем страницу с уст фильтром ");
             mainPage = new Parser(sortedUrl);
+            System.out.println("Выкачали страницу с уст фильтром ");
 
             blockWithGoods = mainPage.findOneNode("//*[@id='block_with_goods']/div[1]");
             if (blockWithGoods != null) {
