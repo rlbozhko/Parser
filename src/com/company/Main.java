@@ -41,17 +41,30 @@ public class Main {
             return;
         }
 
-        String url = arguments.getArg(0);
-
+       //arguments.getArg(0)
         //url = "http://rozetka.com.ua/pressboards/c185692/";
-        newUrls.add(url);
+      //  "http://rozetka.com.ua/svarochnoe-oborudovanie/c152563/"
+        newUrls.add("http://rozetka.com.ua/equipment/c161187/");
 
-        Boolean flagContinue;
-        do {
-            flagContinue = false;
-            cacheUrls.clear();
-            counter = 0;
+        while (newUrls.size() > 0) {
+
+            //TODO убрать строчку она только для статистики   cacheUrls.removeAll(oldUrls);
+            cacheUrls.removeAll(oldUrls);
+            counter = newUrls.size();
+            newUrls.addAll(cacheUrls);
             newUrls.removeAll(oldUrls);
+/*          //+1
+ System.out.println("XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX");
+            System.out.println("cacheUrls.size =" + cacheUrls.size());
+            System.out.println("oldUrls.size   =" + oldUrls.size());
+            System.out.println("newUrls.size   =" + newUrls.size());
+            System.out.println("XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX");
+            System.out.println("Вставили" + (newUrls.size() - counter));*/
+            counter = 0;
+            cacheUrls.clear();
+
+
+
             for (String urlBrowse : newUrls) {
                 if (oldUrls.add(urlBrowse)) {
 
@@ -72,8 +85,8 @@ public class Main {
                                 if (ROZETKA_CATEGORY.matcher(href).matches()) {
                                     if (cacheUrls.add(href)) {
                                         counter++;
-                                        //                                      System.out.println("кэш+ " + counter + " " + href);
-                                        flagContinue = true;
+                                       //System.out.println("кэш+ " + counter + " " + href);
+
                                     }
                                 }
                             }
@@ -82,17 +95,8 @@ public class Main {
                     }
                 }
             }
-            cacheUrls.removeAll(oldUrls);
-            counter = newUrls.size();
-            newUrls.addAll(cacheUrls);
-/*          //+1
- System.out.println("XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX");
-            System.out.println("cacheUrls.size =" + cacheUrls.size());
-            System.out.println("oldUrls.size   =" + oldUrls.size());
-            System.out.println("newUrls.size   =" + newUrls.size());
-            System.out.println("XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX");
-            System.out.println("Вставили" + (newUrls.size() - counter));*/
-        } while (flagContinue && cacheUrls.size() > 0);
+
+        }
 /*        System.out.println("ZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZ");
         System.out.println("cacheUrls.size =" + cacheUrls.size());
         System.out.println("oldUrls.size   =" + oldUrls.size());
