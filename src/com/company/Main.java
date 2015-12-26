@@ -9,6 +9,7 @@ import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathExpressionException;
 import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.regex.Pattern;
 
@@ -28,6 +29,7 @@ public class Main {
 
 
     public static void main(String[] args) throws IOException, XPatherException, ParserConfigurationException, XPathExpressionException {
+        System.out.println(new Date(System.currentTimeMillis()));
         List<String> badUrls = Collections.synchronizedList(new ArrayList<>());
 
         Arguments arguments = new Arguments(args);
@@ -110,7 +112,7 @@ public class Main {
             i++;
             System.out.println(String.format("%d. %s", i, mainPage.findText("//a/text()[last()]", category).trim()));
         }*/
-
+        System.out.println(new Date(System.currentTimeMillis()));
     }
 
     public static void ParseSortPrice(Parser browsePage, String minPrice, String maxPrice, Set<Item> cacheItems) throws ParserConfigurationException, XPatherException {
