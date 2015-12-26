@@ -27,7 +27,7 @@ public class Arguments {
             }
 
         } catch (NumberFormatException | MalformedURLException e) {
-            System.err.println("Неправильные аргументы. Ошибка в порядке аргументов либо в ссылке на сайт, либо в формате цен. Необходимые аргументы: ");
+            System.err.println(" Неправильные аргументы. Ошибка в порядке аргументов либо в ссылке на сайт, либо в формате цен. Необходимые аргументы: ");
             System.err.println(" 1-й аргумент ссылка на сайт: http://rozetka.com.ua/");
             System.err.println(" 2-й аргумент цена от(целое число): 1000");
             System.err.println(" 3-й аргумент цена до(целое число): 1100");

@@ -37,7 +37,7 @@ public class Main {
         Arguments arguments = new Arguments(args);
 
         if (!arguments.isValidArguments()) {
-            System.out.println("Неправильные аргументы. Необходимые аргументы: ");
+            System.out.println(" Неправильные аргументы. Необходимые аргументы: ");
             System.out.println(" ссылка на сайт: http://rozetka.com.ua/");
             System.out.println(" цена от(целое число): 1000");
             System.out.println(" цена до(целое число): 1100");
