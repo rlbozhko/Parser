@@ -16,18 +16,21 @@ import java.util.regex.Pattern;
 public class Main {
     public static Set<String> newUrls = Collections.synchronizedSet(new HashSet<>());
     public static Set<String> oldUrls = Collections.synchronizedSet(new HashSet<>());
-    public static Set<String> cacheUrls = Collections.synchronizedSet(new HashSet<>());
+
 
     public static Set<Item> cacheItems = Collections.synchronizedSet(new HashSet<>());
 
 
     private static final Pattern ROZETKA_CATEGORY = Pattern.compile(".*/c[0-9]*/[^=]*");
 
-    //TODO delete counter
-    private static int counter = 0;
+
 
 
     public static void main(String[] args) throws IOException, XPatherException, ParserConfigurationException, XPathExpressionException {
+        //TODO delete counter
+        int counter =0;
+
+        Set<String> cacheUrls = Collections.synchronizedSet(new HashSet<>());
         System.out.println(new Date(System.currentTimeMillis()));
         List<String> badUrls = Collections.synchronizedList(new ArrayList<>());
 
@@ -41,10 +44,11 @@ public class Main {
             return;
         }
 
-       //arguments.getArg(0)
-        //url = "http://rozetka.com.ua/pressboards/c185692/";
-      //  "http://rozetka.com.ua/svarochnoe-oborudovanie/c152563/"
-        newUrls.add("http://rozetka.com.ua/equipment/c161187/");
+        //arguments.getArg(0)
+        //  "http://rozetka.com.ua/equipment/c161187/"
+        //  "http://rozetka.com.ua/pressboards/c185692/";
+        //  "http://rozetka.com.ua/svarochnoe-oborudovanie/c152563/"
+        newUrls.add(arguments.getArg(0));
 
         while (newUrls.size() > 0) {
 
@@ -62,35 +66,25 @@ public class Main {
             System.out.println("Вставили" + (newUrls.size() - counter));*/
             counter = 0;
             cacheUrls.clear();
-
-
-
             for (String urlBrowse : newUrls) {
                 if (oldUrls.add(urlBrowse)) {
-
                     Parser browsePage = new Parser(urlBrowse);
                     if (browsePage.getDom() == null) {
                         badUrls.add(browsePage.getUrl());
                     } else {
+                        System.out.println("new BIGPAGE");
                         if ((Boolean) browsePage.jaxp("//*[@id=\"sort_price\"]", XPathConstants.BOOLEAN)) {
-                            //                          System.out.println("7777777777777777777 " + urlBrowse);
-
-                            ParseSortPrice(browsePage, arguments.getArg(1), arguments.getArg(2), cacheItems);
+                            System.out.println("GOODS Pages Start");
+                            // System.out.println("7777777777777777777 " + urlBrowse);
+                            //TODO cacheItems.addALL(parseSortPrice(browsePa......
+                            parseSortPrice(browsePage.getUrl(), arguments.getArg(1), arguments.getArg(2), cacheItems);
+                            System.out.println("GOODS Pages Stop");
                         } else {
-                            //                          System.out.println("Нет фильтра цен " + urlBrowse);
-
-                            NodeList nodes = (NodeList) browsePage.jaxp("//a[contains(@href,'rozetka.com.ua')]/@href", XPathConstants.NODESET);
-                            for (int i = 0; i < nodes.getLength(); i++) {
-                                String href = (nodes.item(i).getNodeValue());
-                                if (ROZETKA_CATEGORY.matcher(href).matches()) {
-                                    if (cacheUrls.add(href)) {
-                                        counter++;
-                                       //System.out.println("кэш+ " + counter + " " + href);
-
-                                    }
-                                }
-                            }
-
+                            System.out.println("new Pages Start Нет фильтра цен"+ urlBrowse);
+                            // TODO cacheUrls.addALL(getNewLinks(Parser browsePage));
+                            // cacheUrls = Set<String> getNewLinks(Parser browsePage);
+                            getNewLinks(cacheUrls, browsePage);
+                            System.out.println("new Pages Stop");
                         }
                     }
                 }
@@ -106,26 +100,26 @@ public class Main {
         }
         System.out.println("ZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZ");*/
 
-
-     /*   Parser mainPage = new Parser(url);
-
-        TagNode mainMenu = mainPage.findOneNode("//nav/ul");
-        TagNode[] categories = mainPage.findAllNodes("//li", mainMenu);
-        int i = 0;
-        for (TagNode category : categories) {
-            i++;
-            System.out.println(String.format("%d. %s", i, mainPage.findText("//a/text()[last()]", category).trim()));
-        }*/
         System.out.println(new Date(System.currentTimeMillis()));
     }
 
-    public static void ParseSortPrice(Parser browsePage, String minPrice, String maxPrice, Set<Item> cacheItems) throws ParserConfigurationException, XPatherException, XPathExpressionException {
+    private static void getNewLinks(Set<String> cacheUrls, Parser browsePage) throws XPathExpressionException {
+        NodeList nodes = (NodeList) browsePage.jaxp("//a[contains(@href,'rozetka.com.ua')]/@href", XPathConstants.NODESET);
+        for (int i = 0; i < nodes.getLength(); i++) {
+            String href = (nodes.item(i).getNodeValue());
+            if (ROZETKA_CATEGORY.matcher(href).matches()) {
+                cacheUrls.add(href);
+            }
+        }
+    }
+
+    public static void parseSortPrice(String url, String minPrice, String maxPrice, Set<Item> cacheItems) throws ParserConfigurationException, XPatherException, XPathExpressionException {
         int page = 0;
         Parser mainPage;
         TagNode blockWithGoods;
         do {
             page++;
-            String sortedUrl = browsePage.getUrl() + "page=" + page + ";" + "price=" + minPrice.trim() + "-" + maxPrice.trim() + "/";
+            String sortedUrl = url + "page=" + page + ";" + "price=" + minPrice.trim() + "-" + maxPrice.trim() + "/";
             System.out.println(sortedUrl);
 
 
@@ -133,8 +127,7 @@ public class Main {
 
             blockWithGoods = mainPage.findOneNode("//*[@id='block_with_goods']/div[1]");
             if (blockWithGoods != null) {
-                //     TagNode[] goods = mainPage.findAllNodes("//a[contains(@onclick,'goodsTitleClick')]", blockWithGoods);
-
+                //TagNode[] goods = mainPage.findAllNodes("//div[@class="g-i-tile-i-title clearfix"]/a/text()", blockWithGoods);
                 NodeList nodes = (NodeList) mainPage.jaxp("//a[contains(@onclick,'goodsTitleClick')]", XPathConstants.NODESET);
                 TagNode[] prices = mainPage.findAllNodes("//div[@class='g-price-uah']", blockWithGoods);
                 String name;
