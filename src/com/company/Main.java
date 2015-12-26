@@ -14,11 +14,11 @@ import java.util.regex.Pattern;
 
 
 public class Main {
-    public static Set<String> newUrls = Collections.synchronizedSet(new HashSet<>());
-    public static Set<String> oldUrls = Collections.synchronizedSet(new HashSet<>());
+    public final static Set<String> newUrls = Collections.synchronizedSet(new HashSet<>());
+    public final static Set<String> oldUrls = Collections.synchronizedSet(new HashSet<>());
 
 
-    public static Set<Item> cacheItems = Collections.synchronizedSet(new HashSet<>());
+    public final static Set<Item> cacheItems = Collections.synchronizedSet(new HashSet<>());
 
 
     private static final Pattern ROZETKA_CATEGORY = Pattern.compile(".*/c[0-9]*/[^=]*");
