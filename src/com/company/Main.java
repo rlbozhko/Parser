@@ -21,7 +21,8 @@ public class Main {
     public static Set<Item> cacheItems = Collections.synchronizedSet(new HashSet<>());
 
 
-    private static final Pattern ROZETKA_CATEGORY = Pattern.compile(".*/c[0-9]*/");
+    private static final Pattern ROZETKA_CATEGORY = Pattern.compile(".*/c[0-9]*/[^=]*");
+
     //TODO delete counter
     private static int counter = 0;
 
@@ -113,33 +114,37 @@ public class Main {
     }
 
     public static void ParseSortPrice(Parser browsePage, String minPrice, String maxPrice, Set<Item> cacheItems) throws ParserConfigurationException, XPatherException {
-        int page = 1;
-        String sortedUrl = browsePage.getUrl() + "page=" + page + ";" + "price=" + minPrice.trim() + "-" + maxPrice.trim() + "/";
+        int page = 0;
+        Parser mainPage;
+        TagNode blockWithGoods;
+        do {
+            page++;
+            String sortedUrl = browsePage.getUrl() + "page=" + page + ";" + "price=" + minPrice.trim() + "-" + maxPrice.trim() + "/";
+            System.out.println(sortedUrl);
 
-        //      System.out.println(sortedUrl);
 
-        Parser mainPage = new Parser(sortedUrl);
+            mainPage = new Parser(sortedUrl);
 
-        TagNode blockWithGoods = mainPage.findOneNode("//*[@id='block_with_goods']/div[1]");
-        if (blockWithGoods != null) {
-            TagNode[] goods = mainPage.findAllNodes("//div[@class='g-i-tile-i-title clearfix']", blockWithGoods);
-            int i = 0;
-            if (goods != null) {
-                for (TagNode good : goods) {
-                    i++;
-                    System.out.println(mainPage.findText("//a/text()[last()]", good).trim());
+            blockWithGoods = mainPage.findOneNode("//*[@id='block_with_goods']/div[1]");
+            if (blockWithGoods != null) {
+                TagNode[] goods = mainPage.findAllNodes("//div[@class='g-i-tile-i-title clearfix']", blockWithGoods);
+                TagNode[] prices = mainPage.findAllNodes("//div[@class='g-price-uah']", blockWithGoods);
+                String name;
+                String price;
+                for (int i = 0; i < goods.length; i++) {
 
-                    //Todo: ParseSortPrice
-                    // Продолжать цикл если на странице есть //div[@name="more_goods"]
+                    name = mainPage.findText("//a/text()", goods[i]).trim();
+                    price = mainPage.findText("/text()", prices[i]).trim().replaceAll("&thinsp;", "");
 
-                    //вытащить   // "//*[@id=\"block_with_goods\"]/div[1]"
-                    //вытащить все <div class="g-price-uah">2?255<span class="g-price-uah-sign">?грн</span></div>
-                    //<a href="http://hard.rozetka.com.ua/transcend_ts256gssd360s/p6553018/" onclick="document.fireEvent('goodsTitleClick', {extend_event: [{name: 'goods_id', value: 6553018}]}); return true">
-                    //Transcend SSD360S Premium 256GB 2.5" SATA III MLC (TS256GSSD360S)
-                    //        </a>
+                    System.out.println(name);
+                    System.out.println(price);
+                    cacheItems.add(new Item(name, price));
                 }
-
             }
         }
+        // Продолжать цикл если на странице есть //div[@name="more_goods"]
+        while (blockWithGoods != null && mainPage.findOneNode("//div[@name=\"more_goods\"]", blockWithGoods) != null);
+        //  while (blockWithGoods != null && (Boolean) mainPage.jaxp("//*[@id='block_with_goods']/div[1]//div[@name=\"more_goods\"]", XPathConstants.BOOLEAN));
     }
 }
+

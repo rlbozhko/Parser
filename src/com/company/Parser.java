@@ -4,16 +4,15 @@ import org.htmlcleaner.*;
 import org.w3c.dom.Document;
 
 import javax.xml.namespace.QName;
-import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathExpressionException;
 import javax.xml.xpath.XPathFactory;
-import java.io.IOException;
 import java.net.URI;
 import java.util.Arrays;
 
 public class Parser {
+    private static final TagNode[] NO_TAGS_ARRAY = {};
 
     private HtmlCleaner cleaner;
     private Document dom;
@@ -59,7 +58,7 @@ public class Parser {
         return findOneNode(xp, rootHtml);
     }
 
-    private TagNode findOneNode(String xp, TagNode parent) throws XPatherException {
+    public TagNode findOneNode(String xp, TagNode parent) throws XPatherException {
         Object[] result = parent.evaluateXPath(xp);
         return result != null && result.length > 0 ? (TagNode) result[0] : null;
     }
@@ -70,8 +69,8 @@ public class Parser {
 
     public TagNode[] findAllNodes(String xp, TagNode parent) throws XPatherException {
         Object[] result = parent.evaluateXPath(xp);
-        //TODO Collections.emptyList() toArray
-        return result != null && result.length > 0 ? Arrays.asList(result).toArray(new TagNode[]{}) : null;
+        return result != null ? Arrays.copyOf(result, result.length, TagNode[].class) : NO_TAGS_ARRAY;
+
     }
 
     public String jaxp(String xp) throws XPathExpressionException {
