@@ -8,7 +8,7 @@ public class Arguments {
     // TODO: ADD Enum - Arguments HOST, LOW_PRICE, HIGH_PRICE
 
     final private String[] originalArguments;
-    //Todo верни массив
+
     private List<String> arguments;
     private boolean  valid = false;
 

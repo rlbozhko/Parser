@@ -60,7 +60,7 @@ public class Main {
                     } else {
                         if ((Boolean) browsePage.jaxp("//*[@id=\"sort_price\"]", XPathConstants.BOOLEAN)) {
                             //                          System.out.println("7777777777777777777 " + urlBrowse);
-                            //TODO:метод сохранения Имя+Цена
+
                             ParseSortPrice(browsePage, arguments.getArg(1), arguments.getArg(2), cacheItems);
                         } else {
                             //                          System.out.println("Нет фильтра цен " + urlBrowse);
