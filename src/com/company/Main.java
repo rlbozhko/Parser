@@ -73,7 +73,7 @@ public class Main {
                     if (browsePage.getDom() == null) {
                         badUrls.add(browsePage.getUrl());
                     } else {
-                        System.out.println("new BIGPAGE");
+                        System.out.println("new BIGPAGE ");
                         if ((Boolean) browsePage.jaxp("//*[@id=\"sort_price\"]", XPathConstants.BOOLEAN)) {
                             System.out.println("GOODS Pages Start");
                             // System.out.println("7777777777777777777 " + urlBrowse);
