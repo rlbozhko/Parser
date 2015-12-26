@@ -58,13 +58,13 @@ public class Main {
             counter = newUrls.size();
             newUrls.addAll(cacheUrls);
             newUrls.removeAll(oldUrls);
-/*          //+1
+          //+1
             System.out.println("XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX");
             System.out.println("cacheUrls.size =" + cacheUrls.size());
             System.out.println("oldUrls.size   =" + oldUrls.size());
             System.out.println("newUrls.size   =" + newUrls.size());
             System.out.println("XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX");
-            System.out.println("Вставили" + (newUrls.size() - counter));*/
+            System.out.println("Вставили" + (newUrls.size() - counter));
             counter = 0;
             cacheUrls.clear();
             for (String urlBrowse : newUrls) {
@@ -73,7 +73,7 @@ public class Main {
                     if (browsePage.getDom() == null) {
                         badUrls.add(browsePage.getUrl());
                     } else {
-                        System.out.println("new BIGPAGE");
+                        System.out.println("new BIGPAGE ");
                         if ((Boolean) browsePage.jaxp("//*[@id=\"sort_price\"]", XPathConstants.BOOLEAN)) {
                             System.out.println("GOODS Pages Start");
                             // System.out.println("7777777777777777777 " + urlBrowse);
@@ -81,6 +81,7 @@ public class Main {
                             parseSortPrice(browsePage.getUrl(), arguments.getArg(1), arguments.getArg(2), cacheItems);
                             System.out.println("GOODS Pages Stop");
                         } else {
+                            //
                             System.out.println("new Pages Start Нет фильтра цен"+ urlBrowse);
                             // TODO cacheUrls.addALL(getNewLinks(Parser browsePage));
                             // cacheUrls = Set<String> getNewLinks(Parser browsePage);
@@ -92,14 +93,14 @@ public class Main {
             }
 
         }
-/*        System.out.println("ZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZ");
+        System.out.println("ZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZ");
         System.out.println("cacheUrls.size =" + cacheUrls.size());
         System.out.println("oldUrls.size   =" + oldUrls.size());
         System.out.println("newUrls.size   =" + newUrls.size());
         for (String s : newUrls) {
             System.out.println(s);
         }
-        System.out.println("ZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZ");*/
+        System.out.println("ZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZ");
 
         System.out.println(new Date(System.currentTimeMillis()));
     }
