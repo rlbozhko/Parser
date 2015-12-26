@@ -4,10 +4,12 @@ import org.htmlcleaner.*;
 import org.w3c.dom.Document;
 
 import javax.xml.namespace.QName;
+import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathExpressionException;
 import javax.xml.xpath.XPathFactory;
+import java.io.IOException;
 import java.net.URI;
 import java.util.Arrays;
 
@@ -21,15 +23,15 @@ public class Parser {
     private TagNode rootHtml;
 
 
-    public Parser(String url)  {
+    public Parser(String url) {
         this.url = url;
         cleaner = new HtmlCleaner();
         xpath = XPathFactory.newInstance().newXPath();
         try {
             rootHtml = cleaner.clean(URI.create(url).toURL());
             dom = new DomSerializer(new CleanerProperties()).createDOM(rootHtml);
-        } catch (Exception e) {
-            System.out.println("BADURL "+url);
+        } catch (IOException | ParserConfigurationException e) {
+            System.out.println("BADURL " + url);
             cleaner = null;
             dom = null;
             xpath = null;
