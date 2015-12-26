@@ -41,6 +41,7 @@ public class Main {
             System.out.println(" ссылка на сайт: http://rozetka.com.ua/");
             System.out.println(" цена от(целое число): 1000");
             System.out.println(" цена до(целое число): 1100");
+            System.out.println(" Пример аргументов: http://rozetka.com.ua/ 1000 1100");
             return;
         }
 

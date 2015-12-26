@@ -24,13 +24,14 @@ public class Parser {
 
 
     public Parser(String url) {
-        this.url = url;
+
         cleaner = new HtmlCleaner();
         xpath = XPathFactory.newInstance().newXPath();
         try {
+            this.url = URI.create(url).toURL().toString();
             rootHtml = cleaner.clean(URI.create(url).toURL());
             dom = new DomSerializer(new CleanerProperties()).createDOM(rootHtml);
-        } catch (IOException | ParserConfigurationException e) {
+        } catch ( ParserConfigurationException | IOException e) {
             System.out.println("BADURL " + url);
             cleaner = null;
             dom = null;
