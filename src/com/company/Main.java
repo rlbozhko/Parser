@@ -114,7 +114,7 @@ public class Main {
         System.out.println(new Date(System.currentTimeMillis()));
     }
 
-    public static void ParseSortPrice(Parser browsePage, String minPrice, String maxPrice, Set<Item> cacheItems) throws ParserConfigurationException, XPatherException {
+    public static void ParseSortPrice(Parser browsePage, String minPrice, String maxPrice, Set<Item> cacheItems) throws ParserConfigurationException, XPatherException, XPathExpressionException {
         int page = 0;
         Parser mainPage;
         TagNode blockWithGoods;
@@ -128,13 +128,16 @@ public class Main {
 
             blockWithGoods = mainPage.findOneNode("//*[@id='block_with_goods']/div[1]");
             if (blockWithGoods != null) {
-                TagNode[] goods = mainPage.findAllNodes("//div[@class='g-i-tile-i-title clearfix']", blockWithGoods);
+                //     TagNode[] goods = mainPage.findAllNodes("//a[contains(@onclick,'goodsTitleClick')]", blockWithGoods);
+
+                NodeList nodes = (NodeList) mainPage.jaxp("//a[contains(@onclick,'goodsTitleClick')]", XPathConstants.NODESET);
                 TagNode[] prices = mainPage.findAllNodes("//div[@class='g-price-uah']", blockWithGoods);
                 String name;
                 String price;
-                for (int i = 0; i < goods.length; i++) {
 
-                    name = mainPage.findText("//a/text()", goods[i]).trim();
+
+                for (int i = 0; i < nodes.getLength(); i++) {
+                    name = (nodes.item(i).getTextContent()).trim();
                     price = mainPage.findText("/text()", prices[i]).trim().replaceAll("&thinsp;", "");
 
                     System.out.println(name);

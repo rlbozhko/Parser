@@ -25,8 +25,9 @@ public class MainTest {
         // гладильные доски
         // urLL1 = "http://rozetka.com.ua/pressboards/c185692/";
 
-       // http://rozetka.com.ua/svarochnoe-oborudovanie/c152563/
-        urLL1 = "http://rozetka.com.ua/svarochnoe-oborudovanie/c152563/";
+        // urLL1 = "http://rozetka.com.ua/svarochnoe-oborudovanie/c152563/";
+        urLL1 = "http://hard.rozetka.com.ua/ssd/c80109/";
+
         minPrice = "1000";
         maxPrice = "2000";
         cacheItems = new HashSet<>();
@@ -53,7 +54,7 @@ public class MainTest {
 
             blockWithGoods = mainPage.findOneNode("//*[@id='block_with_goods']/div[1]");
             if (blockWithGoods != null) {
-           //     TagNode[] goods = mainPage.findAllNodes("//a[contains(@onclick,'goodsTitleClick')]", blockWithGoods);
+                //     TagNode[] goods = mainPage.findAllNodes("//a[contains(@onclick,'goodsTitleClick')]", blockWithGoods);
 
                 NodeList nodes = (NodeList) mainPage.jaxp("//a[contains(@onclick,'goodsTitleClick')]", XPathConstants.NODESET);
                 TagNode[] prices = mainPage.findAllNodes("//div[@class='g-price-uah']", blockWithGoods);
@@ -62,8 +63,8 @@ public class MainTest {
 
 
                 for (int i = 0; i < nodes.getLength(); i++) {
-                     name= (nodes.item(i).getTextContent()).replaceAll("\n","");
-                     price = mainPage.findText("/text()", prices[i]).trim().replaceAll("&thinsp;", "");
+                    name = (nodes.item(i).getTextContent()).trim();
+                    price = mainPage.findText("/text()", prices[i]).trim().replaceAll("&thinsp;", "");
 
                     System.out.println(name);
                     System.out.println(price);
@@ -72,7 +73,7 @@ public class MainTest {
             }
         }
         // Продолжать цикл если на странице есть //div[@name="more_goods"]
-            while (blockWithGoods != null && mainPage.findOneNode("//div[@name=\"more_goods\"]", blockWithGoods) != null);
-      //  while (blockWithGoods != null && (Boolean) mainPage.jaxp("//*[@id='block_with_goods']/div[1]//div[@name=\"more_goods\"]", XPathConstants.BOOLEAN));
+        while (blockWithGoods != null && mainPage.findOneNode("//div[@name=\"more_goods\"]", blockWithGoods) != null);
+        //  while (blockWithGoods != null && (Boolean) mainPage.jaxp("//*[@id='block_with_goods']/div[1]//div[@name=\"more_goods\"]", XPathConstants.BOOLEAN));
     }
 }
