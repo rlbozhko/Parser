@@ -12,18 +12,23 @@ public class Arguments {
     final private String[] originalArguments;
 
     private List<String> arguments;
-    private boolean  valid = false;
+    private boolean valid = false;
 
-// TODO конструктор кидает исключение - исправить
+    // TODO конструктор кидает исключение - исправить
     public Arguments(String[] args) {
         originalArguments = args;
         arguments = new ArrayList<>(Arrays.asList(args));
         try {
-            arguments.set(0,URI.create(args[0]).toURL().toString());
-            if(Integer.parseInt(args[1]) > Integer.parseInt(args[2])){
-                String tmp = arguments.get(1);
-                arguments.set(1,arguments.get(2));
-                arguments.set(2,tmp);
+            if (args != null && args.length == 3) {
+
+
+                arguments.set(0, URI.create(args[0]).toURL().toString());
+                if (Integer.parseInt(args[1]) > Integer.parseInt(args[2])) {
+                    String tmp = arguments.get(1);
+                    arguments.set(1, arguments.get(2));
+                    arguments.set(2, tmp);
+                    valid = true;
+                }
             }
 
         } catch (NumberFormatException | MalformedURLException e) {
@@ -36,9 +41,7 @@ public class Arguments {
             throw new RuntimeException(e);
         }
 
-        if (args != null && args.length == 3) {
-            valid = true;
-        }
+
 
     }
 
