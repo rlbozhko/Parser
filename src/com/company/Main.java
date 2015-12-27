@@ -60,7 +60,7 @@ public class Main {
                 new ArrayList<>();
 
 
-        while (bContinue||newUrls.size() > 0) {
+        while (bContinue||newUrls.size() > 0||cacheUrls.size()>0) {
 
             //TODO убрать строчку она только для статистики   cacheUrls.removeAll(oldUrls);
             cacheUrls.removeAll(oldUrls);
@@ -126,6 +126,9 @@ public class Main {
                     mainCacheItems.addAll(future1.get());
                 }else {
                      bContinue = true;
+                    if (newUrls.size() == 0&& cacheUrls.size()==0){
+                        mainCacheItems.addAll(future1.get());
+                    }
                 }
 
             }
