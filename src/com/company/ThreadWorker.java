@@ -27,6 +27,7 @@ public class ThreadWorker implements Callable<Set<Item>> {
         this.url = url;
         this.minPrice = minPrice;
         this.maxPrice = maxPrice;
+        //TODO Collections.synchronizedSet скорее всего не нужен здесь
         this.threadCacheItems = Collections.synchronizedSet(new HashSet<>());;
     }
 
@@ -39,7 +40,7 @@ public class ThreadWorker implements Callable<Set<Item>> {
         return threadCacheItems;
     }
 
-    public  void parseSortPrice(String url, String minPrice, String maxPrice, Set<Item> cacheItems) throws ParserConfigurationException, XPatherException, XPathExpressionException {
+    public  void parseSortPrice(String url, String minPrice, String maxPrice, Set<Item> pCacheItems) throws ParserConfigurationException, XPatherException, XPathExpressionException {
         int page = 0;
         Parser mainPage;
         TagNode blockWithGoods;
@@ -66,12 +67,12 @@ public class ThreadWorker implements Callable<Set<Item>> {
 
 
                     for (int i = 0; i < nodes.getLength(); i++) {
-                        name = (nodes.item(i).getTextContent()).trim();
-                        price = mainPage.findText("/text()", prices[i]).trim().replaceAll("&thinsp;", "");
+                        name = (nodes.item(i).getTextContent()).trim().replaceAll("\n", "");;
+                        price = mainPage.findText("/text()", prices[i]).trim().replaceAll("&thinsp;", "").replaceAll("\n", "");
 
                         System.out.println(name);
                         System.out.println(price);
-                        cacheItems.add(new Item(name, price));
+                        pCacheItems.add(new Item(name, price));
                     }
                 }
             }
