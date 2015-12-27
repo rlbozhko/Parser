@@ -1,7 +1,6 @@
 package com.company;
 
 import com.company.entities.Item;
-import org.htmlcleaner.TagNode;
 import org.htmlcleaner.XPatherException;
 import org.w3c.dom.NodeList;
 
@@ -10,6 +9,10 @@ import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathExpressionException;
 import java.io.IOException;
 import java.util.*;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 import java.util.regex.Pattern;
 
 
@@ -18,7 +21,7 @@ public class Main {
     public final static Set<String> oldUrls = Collections.synchronizedSet(new HashSet<>());
 
 
-    public final static Set<Item> cacheItems = Collections.synchronizedSet(new HashSet<>());
+    public final static Set<Item> mainCacheItems = Collections.synchronizedSet(new HashSet<>());
 
 
     private static final Pattern ROZETKA_CATEGORY = Pattern.compile(".*/c\\d*(/filter/|/)");
@@ -26,12 +29,12 @@ public class Main {
     private static List<String> badUrls = Collections.synchronizedList(new ArrayList<>());
 
 
-    public static void main(String[] args) throws IOException, XPatherException, ParserConfigurationException, XPathExpressionException {
+    public static void main(String[] args) throws IOException, XPatherException, ParserConfigurationException, XPathExpressionException, ExecutionException, InterruptedException {
         //TODO delete counter
         int counter = 0;
 
         Set<String> cacheUrls = Collections.synchronizedSet(new HashSet<>());
-        String d =new Date(System.currentTimeMillis()).toString();
+        String d = new Date(System.currentTimeMillis()).toString();
         System.out.println(d);
         List<String> badUrls = Collections.synchronizedList(new ArrayList<>());
 
@@ -51,6 +54,11 @@ public class Main {
         //  "http://rozetka.com.ua/pressboards/c185692/";
         //  "http://rozetka.com.ua/svarochnoe-oborudovanie/c152563/"
         newUrls.add(arguments.getArg(0));
+
+        ExecutorService service = Executors.newCachedThreadPool();
+        List<Future<Set<Item>>> futures =
+                new ArrayList<Future<Set<Item>>>();
+
 
         while (newUrls.size() > 0) {
 
@@ -79,10 +87,23 @@ public class Main {
                         System.out.println("new BIGPAGE ");
                         if ((Boolean) browsePage.jaxp("//*[@id=\"sort_price\"]", XPathConstants.BOOLEAN)) {
                             System.out.println("GOODS Pages Start");
-                             System.out.println("7777777777777777777 " + urlBrowse);
+                            System.out.println("7777777777777777777 " + urlBrowse);
                             //TODO cacheItems.addALL(parseSortPrice(browsePa......
-                            parseSortPrice(browsePage.getUrl(), arguments.getArg(1), arguments.getArg(2), cacheItems);
+                            Future<Set<Item>> future =
+                                    service.submit(new ThreadWorker(browsePage.getUrl(), arguments.getArg(1), arguments.getArg(2)));
+                            futures.add(future);
+                            //  parseSortPrice(browsePage.getUrl(), arguments.getArg(1), arguments.getArg(2), cacheItems);
                             System.out.println("GOODS Pages Stop");
+
+                            for (Future<Set<Item>> future1 : futures) {
+                                mainCacheItems.addAll(future1.get());
+                            }
+
+                   /*         for (Future<String> future : futures) {
+                                //забираем результат выполнения потока
+                                //если поток ещё не завершился, то происходит ожидание
+                                System.out.println("get result from Future: " + future.get());*/
+
                         } else {
                             //
                             System.out.println("new Pages Start Нет фильтра цен " + urlBrowse);
@@ -100,7 +121,7 @@ public class Main {
         System.out.println("cacheUrls.size =" + cacheUrls.size());
         System.out.println("oldUrls.size   =" + oldUrls.size());
         System.out.println("newUrls.size   =" + newUrls.size());
-        System.out.println("cacheItems.size()   =" + cacheItems.size());
+        System.out.println("cacheItems.size()   =" + mainCacheItems.size());
         System.out.println("ROZETKA_CATEGORY   =" + ROZETKA_CATEGORY);
         System.out.println("arguments   =" + arguments);
         System.out.println("args   =" + args);
@@ -116,7 +137,8 @@ public class Main {
 
         System.out.println(d);
         System.out.println(new Date(System.currentTimeMillis()));
-        System.out.println("DEBUG   =" );
+        System.out.println("DEBUG   =");
+        service.shutdown();
     }
 
     private static void getNewLinks(Set<String> cacheUrls, Parser browsePage) throws XPathExpressionException {
@@ -129,46 +151,6 @@ public class Main {
         }
     }
 
-    public static void parseSortPrice(String url, String minPrice, String maxPrice, Set<Item> cacheItems) throws ParserConfigurationException, XPatherException, XPathExpressionException {
-        int page = 0;
-        Parser mainPage;
-        TagNode blockWithGoods;
-        do {
-            page++;
-            String sortedUrl = url + "page=" + page + ";" + "price=" + minPrice.trim() + "-" + maxPrice.trim() + "/";
-            System.out.println(sortedUrl);
 
-            System.out.println("Качаем страницу с уст фильтром ");
-            mainPage = new Parser(sortedUrl);
-            if (mainPage.getDom() == null) {
-                badUrls.add(mainPage.getUrl());
-                blockWithGoods = null;
-            } else {
-                System.out.println("Выкачали страницу с уст фильтром ");
-
-                blockWithGoods = mainPage.findOneNode("//*[@id='block_with_goods']/div[1]");
-                if (blockWithGoods != null) {
-                    //TagNode[] goods = mainPage.findAllNodes("//div[@class="g-i-tile-i-title clearfix"]/a/text()", blockWithGoods);
-                    NodeList nodes = (NodeList) mainPage.jaxp("//a[contains(@onclick,'goodsTitleClick')]", XPathConstants.NODESET);
-                    TagNode[] prices = mainPage.findAllNodes("//div[@class='g-price-uah']", blockWithGoods);
-                    String name;
-                    String price;
-
-
-                    for (int i = 0; i < nodes.getLength(); i++) {
-                        name = (nodes.item(i).getTextContent()).trim();
-                        price = mainPage.findText("/text()", prices[i]).trim().replaceAll("&thinsp;", "");
-
-                        System.out.println(name);
-                        System.out.println(price);
-                        cacheItems.add(new Item(name, price));
-                    }
-                }
-            }
-        }
-        // Продолжать цикл если на странице есть //div[@name="more_goods"]
-        while (blockWithGoods != null && mainPage.findOneNode("//div[@name=\"more_goods\"]", blockWithGoods) != null);
-        //  while (blockWithGoods != null && (Boolean) mainPage.jaxp("//*[@id='block_with_goods']/div[1]//div[@name=\"more_goods\"]", XPathConstants.BOOLEAN));
-    }
 }
 
