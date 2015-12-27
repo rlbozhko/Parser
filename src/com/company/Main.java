@@ -60,7 +60,7 @@ public class Main {
                 new ArrayList<>();
 
 
-        while (bContinue&&newUrls.size() > 0) {
+        while (bContinue||newUrls.size() > 0) {
 
             //TODO убрать строчку она только для статистики   cacheUrls.removeAll(oldUrls);
             cacheUrls.removeAll(oldUrls);
@@ -96,6 +96,7 @@ public class Main {
                             System.out.println("GOODS Pages Stop");
 
                             for (Future<Set<Item>> future1 : futures) {
+                                bContinue = false;
                                 if(future1.isDone()){
                                     mainCacheItems.addAll(future1.get());
                                 }else {
@@ -120,6 +121,7 @@ public class Main {
 
 
             for (Future<Set<Item>> future1 : futures) {
+                bContinue = false;
                 if(future1.isDone()){
                     mainCacheItems.addAll(future1.get());
                 }else {
@@ -132,8 +134,9 @@ public class Main {
 
 
 
-
+            System.out.println("bContinue   = " + bContinue);
         }
+        System.out.println("bContinue   = " + bContinue);
         System.out.println("ZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZ");
         System.out.println("cacheUrls.size = " + cacheUrls.size());
         System.out.println("oldUrls.size   = " + oldUrls.size());
@@ -153,6 +156,7 @@ public class Main {
         for (String s1 : args) {
             System.out.println(s1);
         }
+
         System.out.println("ZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZ");
 
         System.out.println(d);
