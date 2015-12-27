@@ -8,11 +8,9 @@ import org.w3c.dom.NodeList;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathExpressionException;
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.concurrent.Callable;
-
 
 
 public class ThreadWorker implements Callable<Set<Item>> {
@@ -28,22 +26,19 @@ public class ThreadWorker implements Callable<Set<Item>> {
         this.minPrice = minPrice;
         this.maxPrice = maxPrice;
         //TODO Collections.synchronizedSet скорее всего не нужен здесь
-        this.threadCacheItems = Collections.synchronizedSet(new HashSet<>());;
+        this.threadCacheItems = new HashSet<>();
     }
 
     public Set<Item> call() throws Exception {
-
-
-        parseSortPrice(url,  minPrice, maxPrice, threadCacheItems);
-
-
+        parseSortPrice(url, minPrice, maxPrice);
         return threadCacheItems;
     }
 
-    public  void parseSortPrice(String url, String minPrice, String maxPrice, Set<Item> pCacheItems) throws ParserConfigurationException, XPatherException, XPathExpressionException {
+    public void parseSortPrice(String url, String minPrice, String maxPrice) throws ParserConfigurationException, XPatherException, XPathExpressionException {
         int page = 0;
         Parser mainPage;
         TagNode blockWithGoods;
+        threadCacheItems.clear();
         do {
             page++;
             String sortedUrl = url + "page=" + page + ";" + "price=" + minPrice.trim() + "-" + maxPrice.trim() + "/";
@@ -52,7 +47,7 @@ public class ThreadWorker implements Callable<Set<Item>> {
             System.out.println("WКачаем страницу с уст фильтром ");
             mainPage = new Parser(sortedUrl);
             if (mainPage.getDom() == null) {
-       //         badUrls.add(mainPage.getUrl());
+                //         badUrls.add(mainPage.getUrl());
                 blockWithGoods = null;
             } else {
                 System.out.println("WВыкачали страницу с уст фильтром ");
@@ -67,12 +62,13 @@ public class ThreadWorker implements Callable<Set<Item>> {
 
 
                     for (int i = 0; i < nodes.getLength(); i++) {
-                        name = (nodes.item(i).getTextContent()).trim().replaceAll("\n", "");;
+                        name = (nodes.item(i).getTextContent()).trim().replaceAll("\n", "");
+                        ;
                         price = mainPage.findText("/text()", prices[i]).trim().replaceAll("&thinsp;", "").replaceAll("\n", "");
 
                         System.out.println(name);
                         System.out.println(price);
-                        pCacheItems.add(new Item(name, price));
+                        threadCacheItems.add(new Item(name, price));
                     }
                 }
             }
