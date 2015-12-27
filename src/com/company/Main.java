@@ -85,7 +85,7 @@ public class Main {
                             System.out.println("GOODS Pages Stop");
                         } else {
                             //
-                            System.out.println("new Pages Start Нет фильтра цен" + urlBrowse);
+                            System.out.println("new Pages Start Нет фильтра цен " + urlBrowse);
                             // TODO cacheUrls.addALL(getNewLinks(Parser browsePage));
                             // cacheUrls = Set<String> getNewLinks(Parser browsePage);
                             getNewLinks(cacheUrls, browsePage);
