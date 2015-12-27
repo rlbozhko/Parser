@@ -100,13 +100,23 @@ public class Main {
         System.out.println("cacheUrls.size =" + cacheUrls.size());
         System.out.println("oldUrls.size   =" + oldUrls.size());
         System.out.println("newUrls.size   =" + newUrls.size());
+        System.out.println("cacheItems.size()   =" + cacheItems.size());
+        System.out.println("ROZETKA_CATEGORY   =" + ROZETKA_CATEGORY);
+        System.out.println("arguments   =" + arguments);
+        System.out.println("args   =" + args);
+
         for (String s : newUrls) {
             System.out.println(s);
+        }
+
+        for (String s1 : badUrls) {
+            System.out.println(s1);
         }
         System.out.println("ZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZ");
 
         System.out.println(d);
         System.out.println(new Date(System.currentTimeMillis()));
+        System.out.println("DEBUG   =" );
     }
 
     private static void getNewLinks(Set<String> cacheUrls, Parser browsePage) throws XPathExpressionException {
