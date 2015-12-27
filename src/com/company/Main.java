@@ -55,7 +55,8 @@ public class Main {
         //  "http://rozetka.com.ua/svarochnoe-oborudovanie/c152563/"
         newUrls.add(arguments.getArg(0));
 
-        ExecutorService service = Executors.newCachedThreadPool();
+        ExecutorService service = Executors.newFixedThreadPool(20);
+
         List<Future<Set<Item>>> futures =
                 new ArrayList<>();
 
