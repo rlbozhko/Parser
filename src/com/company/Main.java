@@ -32,7 +32,7 @@ public class Main {
     public static void main(String[] args) throws IOException, XPatherException, ParserConfigurationException, XPathExpressionException, ExecutionException, InterruptedException {
         //TODO delete counter
         int counter = 0;
-
+        boolean bContinue = true;
         Set<String> cacheUrls = Collections.synchronizedSet(new HashSet<>());
         String d = new Date(System.currentTimeMillis()).toString();
         System.out.println(d);
@@ -57,10 +57,10 @@ public class Main {
 
         ExecutorService service = Executors.newCachedThreadPool();
         List<Future<Set<Item>>> futures =
-                new ArrayList<Future<Set<Item>>>();
+                new ArrayList<>();
 
 
-        while (newUrls.size() > 0) {
+        while (bContinue&&newUrls.size() > 0) {
 
             //TODO убрать строчку она только для статистики   cacheUrls.removeAll(oldUrls);
             cacheUrls.removeAll(oldUrls);
@@ -96,7 +96,12 @@ public class Main {
                             System.out.println("GOODS Pages Stop");
 
                             for (Future<Set<Item>> future1 : futures) {
-                                mainCacheItems.addAll(future1.get());
+                                if(future1.isDone()){
+                                    mainCacheItems.addAll(future1.get());
+                                }else {
+                                    bContinue = true;
+                                }
+
                             }
 
                    /*         for (Future<String> future : futures) {
@@ -115,6 +120,21 @@ public class Main {
                     }
                 }
             }
+
+
+            for (Future<Set<Item>> future1 : futures) {
+                if(future1.isDone()){
+                    mainCacheItems.addAll(future1.get());
+                }else {
+                     bContinue = true;
+                }
+
+            }
+
+
+
+
+
 
         }
         System.out.println("ZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZ");

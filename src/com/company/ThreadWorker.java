@@ -48,13 +48,13 @@ public class ThreadWorker implements Callable<Set<Item>> {
             String sortedUrl = url + "page=" + page + ";" + "price=" + minPrice.trim() + "-" + maxPrice.trim() + "/";
             System.out.println(sortedUrl);
 
-            System.out.println("Качаем страницу с уст фильтром ");
+            System.out.println("WРљР°С‡Р°РµРј СЃС‚СЂР°РЅРёС†Сѓ СЃ СѓСЃС‚ С„РёР»СЊС‚СЂРѕРј ");
             mainPage = new Parser(sortedUrl);
             if (mainPage.getDom() == null) {
        //         badUrls.add(mainPage.getUrl());
                 blockWithGoods = null;
             } else {
-                System.out.println("Выкачали страницу с уст фильтром ");
+                System.out.println("WР’С‹РєР°С‡Р°Р»Рё СЃС‚СЂР°РЅРёС†Сѓ СЃ СѓСЃС‚ С„РёР»СЊС‚СЂРѕРј ");
 
                 blockWithGoods = mainPage.findOneNode("//*[@id='block_with_goods']/div[1]");
                 if (blockWithGoods != null) {
@@ -76,7 +76,7 @@ public class ThreadWorker implements Callable<Set<Item>> {
                 }
             }
         }
-        // Продолжать цикл если на странице есть //div[@name="more_goods"]
+        // РџСЂРѕРґРѕР»Р¶Р°С‚СЊ С†РёРєР» РµСЃР»Рё РЅР° СЃС‚СЂР°РЅРёС†Рµ РµСЃС‚СЊ //div[@name="more_goods"]
         while (blockWithGoods != null && mainPage.findOneNode("//div[@name=\"more_goods\"]", blockWithGoods) != null);
         //  while (blockWithGoods != null && (Boolean) mainPage.jaxp("//*[@id='block_with_goods']/div[1]//div[@name=\"more_goods\"]", XPathConstants.BOOLEAN));
     }
