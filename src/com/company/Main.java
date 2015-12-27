@@ -104,10 +104,7 @@ public class Main {
 
                             }
 
-                   /*         for (Future<String> future : futures) {
-                                //забираем результат выполнения потока
-                                //если поток ещё не завершился, то происходит ожидание
-                                System.out.println("get result from Future: " + future.get());*/
+
 
                         } else {
                             //
@@ -138,19 +135,22 @@ public class Main {
 
         }
         System.out.println("ZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZ");
-        System.out.println("cacheUrls.size =" + cacheUrls.size());
-        System.out.println("oldUrls.size   =" + oldUrls.size());
-        System.out.println("newUrls.size   =" + newUrls.size());
-        System.out.println("cacheItems.size()   =" + mainCacheItems.size());
-        System.out.println("ROZETKA_CATEGORY   =" + ROZETKA_CATEGORY);
-        System.out.println("arguments   =" + arguments);
-        System.out.println("args   =" + args);
-
+        System.out.println("cacheUrls.size = " + cacheUrls.size());
+        System.out.println("oldUrls.size   = " + oldUrls.size());
+        System.out.println("newUrls.size   = " + newUrls.size());
         for (String s : newUrls) {
             System.out.println(s);
         }
+        System.out.println("maincacheItems.size()   = " + mainCacheItems.size());
+        System.out.println("ROZETKA_CATEGORY   = " + ROZETKA_CATEGORY);
+        System.out.println("arguments   = " + arguments);
 
+        System.out.println("badUrls.size   = " + badUrls.size());
         for (String s1 : badUrls) {
+            System.out.println(s1);
+        }
+        System.out.println("args   = " + args);
+        for (String s1 : args) {
             System.out.println(s1);
         }
         System.out.println("ZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZ");
