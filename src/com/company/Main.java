@@ -58,8 +58,7 @@ public class Main {
         ExecutorService service = Executors.newFixedThreadPool(20);
         ArrayList<Future> futures =
                 new ArrayList<>();
-        Consumer queueConsumer = new Consumer(transferQueue);
-        new Thread(queueConsumer).start();
+
 
         while (bContinue || newUrls.size() > 0 || cacheUrls.size() > 0) {
 
@@ -97,7 +96,7 @@ public class Main {
                             //System.out.println("7777777777777777777 " + urlBrowse);
                             //TODO cacheItems.addALL(parseSortPrice(browsePa......
                             Future tmpFuture =
-                                    service.submit(new Producer(browsePage.getUrl(), arguments.getArg(1), arguments.getArg(2), transferQueue, mainCacheItems));
+                                    service.submit(new MyProducer(browsePage.getUrl(), arguments.getArg(1), arguments.getArg(2), transferQueue, mainCacheItems));
                             futures.add(tmpFuture);
                             //  parseSortPrice(browsePage.getUrl(), arguments.getArg(1), arguments.getArg(2), cacheItems);
                             //TODO DELETE

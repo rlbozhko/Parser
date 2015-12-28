@@ -12,7 +12,7 @@ import java.util.concurrent.ConcurrentSkipListSet;
 import java.util.concurrent.LinkedTransferQueue;
 
 
-public class Producer implements Runnable {
+public class MyProducer implements Runnable {
 
     private String url;
     private String minPrice;
@@ -20,7 +20,7 @@ public class Producer implements Runnable {
     private LinkedTransferQueue<Item> linkedTransferQueue;
     private ConcurrentSkipListSet mainCacheItems;
 
-    public Producer(String url, String minPrice, String maxPrice, LinkedTransferQueue<Item> transferQueue, ConcurrentSkipListSet mainCacheItems) {
+    public MyProducer(String url, String minPrice, String maxPrice, LinkedTransferQueue<Item> transferQueue, ConcurrentSkipListSet mainCacheItems) {
         this.url = url;
         this.minPrice = minPrice;
         this.maxPrice = maxPrice;
@@ -39,6 +39,7 @@ public class Producer implements Runnable {
     }
 
     public void parseSortPrice(String url, String minPrice, String maxPrice) throws ParserConfigurationException, XPatherException, XPathExpressionException, InterruptedException {
+        System.out.println("Попали в MyConsumer");
         int page = 0;
         Parser mainPage;
         TagNode blockWithGoods;
@@ -77,7 +78,7 @@ public class Producer implements Runnable {
                             if (linkedTransferQueue.size() < 100) {
                                 linkedTransferQueue.add(item);
                             } else {
-                              //  transferQueue.transfer(item);
+                                linkedTransferQueue.transfer(item);
                             }
                         }
 
