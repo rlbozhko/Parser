@@ -8,49 +8,54 @@ import org.w3c.dom.NodeList;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathExpressionException;
-import java.util.HashSet;
-import java.util.Set;
-import java.util.concurrent.Callable;
+import java.util.concurrent.ConcurrentSkipListSet;
+import java.util.concurrent.TransferQueue;
 
 
-public class ThreadWorker implements Callable<Set<Item>> {
+public class Producer implements Runnable {
 
     private String url;
-    String minPrice;
-    String maxPrice;
-    Set<Item> threadCacheItems;
+    private String minPrice;
+    private String maxPrice;
+    private TransferQueue<Item> transferQueue;
+    private ConcurrentSkipListSet mainCacheItems;
 
-
-    public ThreadWorker(String url, String minPrice, String maxPrice) {
+    public Producer(String url, String minPrice, String maxPrice, TransferQueue<Item> transferQueue, ConcurrentSkipListSet mainCacheItems) {
         this.url = url;
         this.minPrice = minPrice;
         this.maxPrice = maxPrice;
-        //TODO Collections.synchronizedSet скорее всего не нужен здесь
-        this.threadCacheItems = new HashSet<>();
+        this.transferQueue = transferQueue;
+        this.mainCacheItems = mainCacheItems;
     }
 
-    public Set<Item> call() throws Exception {
-        parseSortPrice(url, minPrice, maxPrice);
-        return threadCacheItems;
+    @Override
+    public void run() {
+        try {
+            parseSortPrice(url, minPrice, maxPrice);
+        } catch (ParserConfigurationException | XPathExpressionException | XPatherException | InterruptedException e) {
+            e.printStackTrace();
+        }
+
     }
 
-    public void parseSortPrice(String url, String minPrice, String maxPrice) throws ParserConfigurationException, XPatherException, XPathExpressionException {
+    public void parseSortPrice(String url, String minPrice, String maxPrice) throws ParserConfigurationException, XPatherException, XPathExpressionException, InterruptedException {
         int page = 0;
         Parser mainPage;
         TagNode blockWithGoods;
-        threadCacheItems.clear();
+
         do {
             page++;
             String sortedUrl = url + "page=" + page + ";" + "price=" + minPrice.trim() + "-" + maxPrice.trim() + "/";
-            System.out.println(sortedUrl);
-
-            System.out.println("WКачаем страницу с уст фильтром ");
+            //TODO DELETE
+            //System.out.println(sortedUrl);
+            //TODO DELETE
+            //System.out.println("WКачаем страницу с уст фильтром ");
             mainPage = new Parser(sortedUrl);
             if (mainPage.getDom() == null) {
-                //         badUrls.add(mainPage.getUrl());
                 blockWithGoods = null;
             } else {
-                System.out.println("WВыкачали страницу с уст фильтром ");
+                //TODO DELETE
+                //System.out.println("WВыкачали страницу с уст фильтром ");
 
                 blockWithGoods = mainPage.findOneNode("//*[@id='block_with_goods']/div[1]");
                 if (blockWithGoods != null) {
@@ -63,12 +68,20 @@ public class ThreadWorker implements Callable<Set<Item>> {
 
                     for (int i = 0; i < nodes.getLength(); i++) {
                         name = (nodes.item(i).getTextContent()).trim().replaceAll("\n", "");
-                        ;
                         price = mainPage.findText("/text()", prices[i]).trim().replaceAll("&thinsp;", "").replaceAll("\n", "");
+                        //TODO DELETE
+                        // System.out.println(name);
+                        // System.out.println(price);
+                        Item item = new Item(name, price);
+                        if (mainCacheItems.add(item)) {
+                            if (transferQueue.size() < 100) {
+                                transferQueue.add(item);
+                            } else {
+                              //  transferQueue.transfer(item);
+                            }
+                        }
 
-                        System.out.println(name);
-                        System.out.println(price);
-                        threadCacheItems.add(new Item(name, price));
+
                     }
                 }
             }

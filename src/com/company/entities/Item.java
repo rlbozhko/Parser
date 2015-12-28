@@ -3,12 +3,12 @@ package com.company.entities;
 
 import java.util.Objects;
 
-public class Item {
+public class Item implements Comparable {
    private String name;
    private String price;
 
 
-    public Item() {
+    public Item()   {
     }
 
     public Item(String name, String price) {
@@ -56,5 +56,22 @@ public class Item {
         final Item other = (Item) obj;
         return Objects.equals(this.name, other.name)
                 && Objects.equals(this.price, other.price);
+    }
+
+
+    @Override
+    public int compareTo(Object obj) {
+
+        if (this == obj) {
+            return 0;
+        }
+
+        if (obj == null || getClass() != obj.getClass()) {
+            return 1;
+        }
+        final Item other = (Item) obj;
+        int last = this.name.compareTo(other.name);
+        return last == 0 ? this.price.compareTo(other.price) : last;
+
     }
 }

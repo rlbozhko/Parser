@@ -9,34 +9,33 @@ import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathExpressionException;
 import java.io.IOException;
 import java.util.*;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
+import java.util.concurrent.*;
 import java.util.regex.Pattern;
 
 
 public class Main {
-    public final static Set<String> newUrls = Collections.synchronizedSet(new HashSet<>());
-    public final static Set<String> oldUrls = Collections.synchronizedSet(new HashSet<>());
-
-
-    public final static Set<Item> mainCacheItems = Collections.synchronizedSet(new HashSet<>());
-
 
     private static final Pattern ROZETKA_CATEGORY = Pattern.compile(".*/c\\d*(/filter/|/)");
 
-    private static List<String> badUrls = Collections.synchronizedList(new ArrayList<>());
-
-
     public static void main(String[] args) throws IOException, XPatherException, ParserConfigurationException, XPathExpressionException, ExecutionException, InterruptedException {
-        //TODO delete counter
-        int counter = 0;
-        boolean bContinue = true;
-        Set<String> cacheUrls = Collections.synchronizedSet(new HashSet<>());
+        //TODO delete
         String d = new Date(System.currentTimeMillis()).toString();
         System.out.println(d);
-        List<String> badUrls = Collections.synchronizedList(new ArrayList<>());
+
+        //TODO delete counter
+        int counter = 0;
+
+        boolean bContinue = true;
+
+        final TransferQueue<Item> transferQueue = new LinkedTransferQueue<>();
+        final ConcurrentSkipListSet mainCacheItems = new ConcurrentSkipListSet<>();
+
+        final Set<String> cacheUrls = new HashSet<>();
+        final Set<String> newUrls = new HashSet<>();
+        final Set<String> oldUrls = new HashSet<>();
+
+        final List<String> badUrls = new ArrayList<>();
+
 
         Arguments arguments = new Arguments(args);
 
@@ -49,6 +48,7 @@ public class Main {
             return;
         }
 
+        //TODO DELETE
         //arguments.getArg(0)
         //  "http://rozetka.com.ua/equipment/c161187/"
         //  "http://rozetka.com.ua/pressboards/c185692/";
@@ -56,90 +56,82 @@ public class Main {
         newUrls.add(arguments.getArg(0));
 
         ExecutorService service = Executors.newFixedThreadPool(20);
-
-        List<Future<Set<Item>>> futures =
+        ArrayList<Future> futures =
                 new ArrayList<>();
 
 
-        while (bContinue||newUrls.size() > 0||cacheUrls.size()>0) {
+        while (bContinue || newUrls.size() > 0 || cacheUrls.size() > 0) {
+
 
             //TODO убрать строчку она только для статистики   cacheUrls.removeAll(oldUrls);
             cacheUrls.removeAll(oldUrls);
-            counter = newUrls.size();
+            //TODO DELETE
+            //counter = newUrls.size();
             newUrls.addAll(cacheUrls);
             newUrls.removeAll(oldUrls);
             //+1
-            System.out.println("XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX");
-            System.out.println("cacheUrls.size =" + cacheUrls.size());
-            System.out.println("oldUrls.size   =" + oldUrls.size());
-            System.out.println("newUrls.size   =" + newUrls.size());
-            System.out.println("XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX");
-            System.out.println("Вставили" + (newUrls.size() - counter));
+            //TODO DELETE
+            //System.out.println("XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX");
+            //System.out.println("cacheUrls.size =" + cacheUrls.size());
+            //System.out.println("oldUrls.size   =" + oldUrls.size());
+            //System.out.println("newUrls.size   =" + newUrls.size());
+            //System.out.println("XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX");
+            //System.out.println("Вставили" + (newUrls.size() - counter));
             counter = 0;
             cacheUrls.clear();
             for (String urlBrowse : newUrls) {
                 if (oldUrls.add(urlBrowse)) {
-                    System.out.println("Качаем страницу 1 ");
+                    //TODO DELETE
+                    //System.out.println("Качаем страницу 1 ");
                     Parser browsePage = new Parser(urlBrowse);
-                    System.out.println("Выкачали страницу 1 ");
+                    //TODO DELETE
+                    //System.out.println("Выкачали страницу 1 ");
                     if (browsePage.getDom() == null) {
                         badUrls.add(browsePage.getUrl());
                     } else {
-                        System.out.println("new BIGPAGE ");
+                        //TODO DELETE
+                        //System.out.println("new BIGPAGE ");
                         if ((Boolean) browsePage.jaxp("//*[@id=\"sort_price\"]", XPathConstants.BOOLEAN)) {
-                            System.out.println("GOODS Pages Start");
-                            System.out.println("7777777777777777777 " + urlBrowse);
+                            //TODO DELETE
+                            //System.out.println("7777777777777777777 " + urlBrowse);
                             //TODO cacheItems.addALL(parseSortPrice(browsePa......
-                            Future<Set<Item>> future =
-                                    service.submit(new ThreadWorker(browsePage.getUrl(), arguments.getArg(1), arguments.getArg(2)));
-                            futures.add(future);
+                            Future tmpFuture =
+                                    service.submit(new Producer(browsePage.getUrl(), arguments.getArg(1), arguments.getArg(2), transferQueue, mainCacheItems));
+                            futures.add(tmpFuture);
                             //  parseSortPrice(browsePage.getUrl(), arguments.getArg(1), arguments.getArg(2), cacheItems);
-                            System.out.println("GOODS Pages Stop");
-
-                            for (Future<Set<Item>> future1 : futures) {
-                                bContinue = false;
-                                if(future1.isDone()){
-                                    mainCacheItems.addAll(future1.get());
-                                }else {
+                            //TODO DELETE
+                            //System.out.println("GOODS Pages Stop");
+                            bContinue = false;
+                            for (Future future : futures) {
+                                if (!future.isDone()) {
                                     bContinue = true;
                                 }
-
                             }
-
-
-
                         } else {
                             //
-                            System.out.println("new Pages Start Нет фильтра цен " + urlBrowse);
+                            //TODO DELETE
+                            //System.out.println("new Pages Start Нет фильтра цен " + urlBrowse);
                             // TODO cacheUrls.addALL(getNewLinks(Parser browsePage));
                             // cacheUrls = Set<String> getNewLinks(Parser browsePage);
                             getNewLinks(cacheUrls, browsePage);
-                            System.out.println("new Pages Stop");
+                            //TODO DELETE
+                            //System.out.println("new Pages Stop");
                         }
                     }
                 }
             }
 
 
-            for (Future<Set<Item>> future1 : futures) {
-                bContinue = false;
-                if(future1.isDone()){
-                    mainCacheItems.addAll(future1.get());
-                }else {
-                     bContinue = true;
-                    if (newUrls.size() == 0&& cacheUrls.size()==0){
-                        mainCacheItems.addAll(future1.get());
-                    }
+            bContinue = false;
+            for (Future future : futures) {
+                if (!future.isDone()) {
+                    bContinue = true;
                 }
-
             }
-
-
-
-
-
-            System.out.println("bContinue   = " + bContinue);
+            //TODO DELETE
+            //System.out.println("bContinue   = " + bContinue);
         }
+
         System.out.println("bContinue   = " + bContinue);
         System.out.println("ZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZ");
         System.out.println("cacheUrls.size = " + cacheUrls.size());
@@ -148,23 +140,37 @@ public class Main {
         for (String s : newUrls) {
             System.out.println(s);
         }
+
         System.out.println("maincacheItems.size()   = " + mainCacheItems.size());
         System.out.println("ROZETKA_CATEGORY   = " + ROZETKA_CATEGORY);
         System.out.println("arguments   = " + arguments);
 
         System.out.println("badUrls.size   = " + badUrls.size());
-        for (String s1 : badUrls) {
+        for (
+                String s1
+                : badUrls)
+
+        {
             System.out.println(s1);
         }
+
         System.out.println("args   = " + args);
-        for (String s1 : args) {
+        for (
+                String s1
+                : args)
+
+        {
             System.out.println(s1);
         }
 
         System.out.println("ZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZ");
 
         System.out.println(d);
-        System.out.println(new Date(System.currentTimeMillis()));
+        System.out.println(new
+
+                Date(System.currentTimeMillis()
+
+        ));
         System.out.println("DEBUG   =");
         service.shutdown();
     }
