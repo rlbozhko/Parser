@@ -9,7 +9,7 @@ import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathExpressionException;
 import java.util.concurrent.ConcurrentSkipListSet;
-import java.util.concurrent.TransferQueue;
+import java.util.concurrent.LinkedTransferQueue;
 
 
 public class Producer implements Runnable {
@@ -17,14 +17,14 @@ public class Producer implements Runnable {
     private String url;
     private String minPrice;
     private String maxPrice;
-    private TransferQueue<Item> transferQueue;
+    private LinkedTransferQueue<Item> linkedTransferQueue;
     private ConcurrentSkipListSet mainCacheItems;
 
-    public Producer(String url, String minPrice, String maxPrice, TransferQueue<Item> transferQueue, ConcurrentSkipListSet mainCacheItems) {
+    public Producer(String url, String minPrice, String maxPrice, LinkedTransferQueue<Item> transferQueue, ConcurrentSkipListSet mainCacheItems) {
         this.url = url;
         this.minPrice = minPrice;
         this.maxPrice = maxPrice;
-        this.transferQueue = transferQueue;
+        this.linkedTransferQueue = transferQueue;
         this.mainCacheItems = mainCacheItems;
     }
 
@@ -74,8 +74,8 @@ public class Producer implements Runnable {
                         // System.out.println(price);
                         Item item = new Item(name, price);
                         if (mainCacheItems.add(item)) {
-                            if (transferQueue.size() < 100) {
-                                transferQueue.add(item);
+                            if (linkedTransferQueue.size() < 100) {
+                                linkedTransferQueue.add(item);
                             } else {
                               //  transferQueue.transfer(item);
                             }

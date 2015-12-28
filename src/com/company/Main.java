@@ -27,7 +27,7 @@ public class Main {
 
         boolean bContinue = true;
 
-        final TransferQueue<Item> transferQueue = new LinkedTransferQueue<>();
+        final LinkedTransferQueue<Item> transferQueue = new LinkedTransferQueue<>();
         final ConcurrentSkipListSet mainCacheItems = new ConcurrentSkipListSet<>();
 
         final Set<String> cacheUrls = new HashSet<>();
@@ -58,7 +58,8 @@ public class Main {
         ExecutorService service = Executors.newFixedThreadPool(20);
         ArrayList<Future> futures =
                 new ArrayList<>();
-
+        Consumer queueConsumer = new Consumer(transferQueue);
+        new Thread(queueConsumer).start();
 
         while (bContinue || newUrls.size() > 0 || cacheUrls.size() > 0) {
 

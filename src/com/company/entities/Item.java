@@ -4,11 +4,11 @@ package com.company.entities;
 import java.util.Objects;
 
 public class Item implements Comparable {
-   private String name;
-   private String price;
+    private String name;
+    private String price;
 
 
-    public Item()   {
+    public Item() {
     }
 
     public Item(String name, String price) {
